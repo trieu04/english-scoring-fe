@@ -1,24 +1,13 @@
 import { createRoute } from "@tanstack/react-router";
 import { rootRoute } from "../router";
-import { AboutPage } from "./about";
-import { ContactPage } from "./contact";
+import { aboutRoute } from "./about/about.route";
+import { contactRoute } from "./contact/contact.route";
 import { InfomationalLayout } from "./informational.layout";
 
-const _infomationalRoute = createRoute({
+export const infomationalLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/i",
+  id: "infomational",
   component: InfomationalLayout,
 });
 
-export const infomationalRoute = _infomationalRoute.addChildren([
-  createRoute({
-    getParentRoute: () => _infomationalRoute,
-    path: "/about",
-    component: AboutPage,
-  }),
-  createRoute({
-    getParentRoute: () => _infomationalRoute,
-    path: "/contact",
-    component: ContactPage,
-  }),
-]);
+infomationalLayoutRoute.addChildren([aboutRoute, contactRoute]);

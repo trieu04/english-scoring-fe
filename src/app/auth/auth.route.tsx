@@ -1,24 +1,16 @@
 import { createRoute } from "@tanstack/react-router";
 import { rootRoute } from "../router";
 import { AuthLayout } from "./auth.layout";
-import { LoginPage } from "./login/login.index";
-import { SignupPage } from "./signup/signup.index";
+import { signupRoute } from "./signup/signup.route";
+import { loginRoute } from "./login/login.route";
 
-const _authRoute = createRoute({
+export const authLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/auth",
+  id: "auth",
   component: AuthLayout,
 });
 
-export const authRoute = _authRoute.addChildren([
-  createRoute({
-    getParentRoute: () => _authRoute,
-    path: "/login",
-    component: LoginPage,
-  }),
-  createRoute({
-    getParentRoute: () => _authRoute,
-    path: "/signup",
-    component: SignupPage,
-  }),
+authLayoutRoute.addChildren([
+  signupRoute,
+  loginRoute,
 ]);

@@ -1,7 +1,7 @@
-import { LandingPage } from "./landing-page";
+import { LandingComponent } from "./landing/landing";
 
 export function IndexPage() {
   return (
-    <LandingPage />
+    <LandingComponent />
   );
 }
