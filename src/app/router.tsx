@@ -5,6 +5,7 @@ import { authLayoutRoute } from "./auth/auth.route";
 import { dashboardLayoutRoute } from "./dashboard/dashboard.route";
 import { indexPageRoute } from "./index-page/index-page.route";
 import { infomationalLayoutRoute } from "./informational/informational.route";
+import { testRoute } from "./test/test.route";
 
 export const rootRoute = createRootRoute({
   component: () => (
@@ -21,6 +22,7 @@ export const routeTree = rootRoute.addChildren([
   dashboardLayoutRoute,
   authLayoutRoute,
   infomationalLayoutRoute,
+  testRoute,
 ]);
 
 export const router = createRouter({ routeTree });
