@@ -28,14 +28,13 @@ export function SoundPlayer({
   return (
     <div
       className={cn(
-        "bg-second text-black flex items-center space-x-2 rounded-xl p-6",
+        "bg-ds-second text-black flex items-center space-x-2 rounded-xl p-6",
         className,
       )}
       {...props}
     >
-      <div className="rounded-full bg-main p-4">
-        <Icons.PlayIcon className="stroke-white" />
-
+      <div className="rounded-full bg-ds-main p-4">
+        <Icons.PlayIcon className="stroke-ds-white" />
       </div>
       <div className="grow flex flex-col space-y-2">
         <Slider
