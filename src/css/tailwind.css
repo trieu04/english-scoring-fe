@@ -5,20 +5,42 @@
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
   }
+
+  h1 {
+    font-size: var(--text-2xl);
+    font-weight: 700;
+  }
+
+  h2 {
+    font-size: var(--text-xl);
+    font-weight: 700;
+  }
+
+  h3 {
+    font-size: var(--text-lg);
+    font-weight: 700;
+  }
+
+  a {
+    color: var(--color-blue-600);
+    text-decoration-line: underline;
+  }
 }
 
 @theme {
   /* Design */
-  --color-ds-back: rgba(29, 35, 37, 1);
-  --color-ds-blue1: rgba(237, 246, 249, 1);
-  --color-ds-blue2: rgba(255, 255, 255, 1);
-  --color-ds-grey1: rgba(224, 224, 224, 1);
-  --color-ds-grey2: rgba(100, 100, 100, 1);
-  --color-ds-highlight: rgba(0, 255, 85, 1);
-  --color-ds-line: rgba(249, 249, 249, 1);
-  --color-ds-main: rgba(56, 129, 162, 1);
-  --color-ds-second: rgba(255, 247, 231, 1);
-  --color-ds-white: rgba(255, 255, 255, 1);
+  --color-dscl-back: #1d2325;
+  --color-dscl-blue1: #edf6f9;
+  --color-dscl-blue2: #ffffff;
+  --color-dscl-grey1: #e0e0e0;
+  --color-dscl-grey2: #646464;
+  --color-dscl-highlight: #00ff55;
+  --color-dscl-line: #f9f9f9;
+  --color-dscl-main: #3881a2;
+  --color-dscl-second: #fff7e7;
+  --color-dscl-white: #ffffff;
+
+  --font-sans: "Helvetica", sans-serif;
 
   /* Shadcn */
   --color-background: hsl(var(--background));

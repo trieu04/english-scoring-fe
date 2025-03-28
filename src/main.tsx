@@ -1,8 +1,8 @@
 import { lazy, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ConfigurationError } from "./components/error/configuration-error";
-import "./css/index.css";
 import "./css/tailwind.css";
+import "./css/index.css";
 
 const root = createRoot(document.getElementById("root")!);
 

@@ -28,15 +28,15 @@ export function SoundPlayer({
   return (
     <div
       className={cn(
-        "bg-ds-second text-black flex items-center space-x-2 rounded-xl p-6",
+        "bg-dscl-second text-black flex items-center space-x-2 rounded-xl p-6",
         className,
       )}
       {...props}
     >
-      <div className="rounded-full bg-ds-main p-4">
-        <Icons.PlayIcon className="stroke-ds-white" />
+      <div className="rounded-full bg-dscl-main p-4">
+        <Icons.PlayIcon className="stroke-dscl-white" />
       </div>
-      <div className="grow flex flex-col space-y-2">
+      <div className="grow flex flex-col space-y-1">
         <Slider
           className="grow"
           onChange={v => setValue(v)}
