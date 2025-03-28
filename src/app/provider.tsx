@@ -1,12 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { lazy, Suspense } from "react";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from "../providers/auth.provider";
-
-const ReactQueryDevtoolsProduction = lazy(() =>
-  import("@tanstack/react-query-devtools/production").then(d => ({
-    default: d.ReactQueryDevtools,
-  })),
-);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient({
@@ -22,9 +16,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         {children}
       </AuthProvider>
-      <Suspense>
-        <ReactQueryDevtoolsProduction />
-      </Suspense>
+      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 }
