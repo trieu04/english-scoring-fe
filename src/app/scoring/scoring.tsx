@@ -21,7 +21,7 @@ export function ScoringPage() {
           </div>
         </nav>
         <section className="rounded-lg w-2/3 bg-dscl-white h-fit">
-          <WritingComponent />
+          <WritingComponent examId={examId} />
         </section>
         <section className="rounded-lg w-1/3 bg-dscl-white h-fit">
           <SpeakingComponent />
