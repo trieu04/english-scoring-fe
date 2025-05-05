@@ -11,10 +11,22 @@ export interface IApiError {
 
 export const api = Axios.create({
   baseURL: env.VITE_APP_API_URL,
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  },
 });
 
 api.interceptors.request.use(authRequestInterceptor);
+api.interceptors.request.use(mocksDelayInterceptor);
 api.interceptors.response.use(undefined, apiErrorInterceptor);
+
+function mocksDelayInterceptor(config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> {
+  if (config.url?.startsWith("/mocks")) {
+    return new Promise(resolve => setTimeout(() => resolve(config), 500 + Math.random() * 500));
+  }
+  return Promise.resolve(config);
+}
 
 function authRequestInterceptor(config: InternalAxiosRequestConfig) {
   if (config.headers) {

@@ -1,10 +1,10 @@
 import Icons from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { getExamSessionListData, getExamListData } from "@/mocks/exams";
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Spin } from "antd";
+import { Spin } from "antd";
 import clsx from "clsx";
 import { useState } from "react";
+import { getExamListData, getExamSessionListData } from "../../apis/exams.api";
 
 interface IComponentProps {
   examId: number | null;
@@ -17,17 +17,18 @@ export function NavComponent({ examId, setExamId }: IComponentProps) {
   const examSessionsQuery = useQuery({
     queryKey: ["exam-sessions"],
     queryFn: () => getExamSessionListData(),
-    staleTime: 5000,
+    staleTime: 0,
   });
 
   const examListQuery = useQuery({
     queryKey: ["exam-list", pickedExamSession?.id],
     queryFn: () => getExamListData(pickedExamSession?.id as number),
     enabled: !!pickedExamSession,
+    staleTime: 0,
   });
 
   return (
-    <div className="px-4 w-64 max-h-full overflow-y-auto">
+    <div className="px-4 w-64 max-h-full overflow-y-auto ">
       <div className="py-3 border-b-2 border-dscl-blue1 flex items-center">
         <h2 className="grow">File and history</h2>
         <Icons.SidebarIcon />
@@ -47,7 +48,7 @@ export function NavComponent({ examId, setExamId }: IComponentProps) {
                     <h3 className="grow">History</h3>
                     <Icons.MoreVerticalIcon />
                   </div>
-                  {examSessionsQuery.isLoading && <Spin className="w-full" tip="Loading" size="small" />}
+                  {examSessionsQuery.isLoading && <Spin className="w-full" size="small" />}
                   {examSessionsQuery.isSuccess && (
                     <div className="flex flex-col space-y-6 py-6">
                       {
@@ -77,10 +78,10 @@ export function NavComponent({ examId, setExamId }: IComponentProps) {
                     <h3 className="grow">{pickedExamSession.name}</h3>
                     <Icons.MoreVerticalIcon />
                   </div>
-                  {examListQuery.isLoading && <Spin className="w-full" tip="Loading" size="small" />}
+                  {examListQuery.isLoading && <Spin className="w-full" size="small" />}
                   {examListQuery.isSuccess
                     && (
-                      <div className="flex flex-col space-y-2 py-6">
+                      <div className="flex flex-col space-y-2 py-6 max-h-[calc(var(--navbar-height)*0.6)] overflow-y-auto">
                         {
                           examListQuery.data.map(item => (
                             <div key={item.id} className={clsx("p-2 rounded-sm", item.id === examId && "bg-dscl-blue1")}>

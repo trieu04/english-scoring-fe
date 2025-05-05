@@ -1,6 +1,5 @@
 import Icons from "@/components/icons";
 import Logos from "@/components/logos";
-import { SoundPlayer } from "@/components/media/sound-player";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -67,8 +66,6 @@ export function TestPage() {
           <p>Card Content</p>
         </CardContent>
       </Card>
-      <h2>Sound Player</h2>
-      <SoundPlayer currentTime={100} totalTime={200} />
       <div className="h-32"></div>
     </div>
   );
