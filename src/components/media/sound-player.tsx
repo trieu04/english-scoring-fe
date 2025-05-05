@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
-import { Slider } from "antd";
+import { Popover, Slider } from "antd";
 import Icons from "../icons";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import { useEffect, useState } from "react";
 
 function formatDuration(seconds: number) {
@@ -24,6 +24,7 @@ export function SoundPlayer({
   useEffect(() => {
     setValue(currentTime);
   }, []);
+  const [open, setOpen] = useState(false);
 
   return (
     <div
@@ -33,7 +34,7 @@ export function SoundPlayer({
       )}
       {...props}
     >
-      <div className="rounded-full bg-dscl-main p-4">
+      <div className="rounded-full bg-dscl-main p-4 cursor-pointer">
         <Icons.PlayIcon className="stroke-dscl-white" />
       </div>
       <div className="grow flex flex-col space-y-1">
@@ -50,7 +51,21 @@ export function SoundPlayer({
         </div>
 
       </div>
-      <Icons.MoreVerticalIcon />
+      <Popover
+        content={(
+          <div>
+            <a>Download</a>
+          </div>
+        )}
+        title="Options"
+        trigger="click"
+        open={open}
+        onOpenChange={(newOpen) => { setOpen(newOpen); }}
+      >
+        <div className="cursor-pointer">
+          <Icons.MoreVerticalIcon />
+        </div>
+      </Popover>
     </div>
   );
 }
