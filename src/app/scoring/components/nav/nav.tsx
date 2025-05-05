@@ -5,6 +5,7 @@ import { Spin } from "antd";
 import clsx from "clsx";
 import { useState } from "react";
 import { getExamListData, getExamSessionListData } from "../../apis/exams.api";
+import { UploadPopup } from "../upload/upload";
 
 interface IComponentProps {
   examId: number | null;
@@ -13,6 +14,7 @@ interface IComponentProps {
 
 export function NavComponent({ examId, setExamId }: IComponentProps) {
   const [pickedExamSession, setPickedExamSession] = useState<{ id: number; name: string } | null>(null);
+  const [isOpenUpload, setIsOpenUpload] = useState(false);
 
   const examSessionsQuery = useQuery({
     queryKey: ["exam-sessions"],
@@ -34,10 +36,11 @@ export function NavComponent({ examId, setExamId }: IComponentProps) {
         <Icons.SidebarIcon />
       </div>
       <div className="p-3">
-        <Button className="w-full">
+        <Button className="w-full" onClick={() => setIsOpenUpload(true)}>
           <Icons.PlusIcon className="stroke-dscl-white" />
           <span>New Scoring</span>
         </Button>
+        <UploadPopup isOpen={isOpenUpload} setIsOpen={setIsOpenUpload} />
       </div>
       <div>
         {
