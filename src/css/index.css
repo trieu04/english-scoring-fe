@@ -52,6 +52,8 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   --header-height: 4rem;
+  --header-margin: calc(var(--header-height) + var(--spacing) * 2);
+  --navbar-height: calc(100vh - var(--header-margin));
 }
 
 .dark {

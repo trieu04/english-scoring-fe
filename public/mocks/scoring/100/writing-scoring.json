@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "scoringDetails": {
+    "overall": 8.5,
+    "organization": 8.8,
+    "vocabulary": 8.0,
+    "grammar": 8.5
+  },
+  "explaination": "<p>Tổ chức bài viết (Coherence and Organization):</p>\n<ul className=\"list-outside list-disc pl-6\">\n  <li>Điểm: 9/10</li>\n  <li>Lý do: Bài viết của bạn có cấu trúc rõ ràng và mạch lạc. Bạn đã mở đầu bằng một luận điểm chính (work from home có thể hiệu quả), sau đó đưa ra các lý do ủng hộ và phản đối. Cuối cùng, bạn đã kết luận một cách hợp lý với gợi ý về giải pháp hybrid. Điểm trừ nhỏ có thể là việc có thể phát triển thêm ví dụ chi tiết cho mỗi luận điểm.</li>\n</ul>\n\n<p>Ngữ pháp và chính tả (Grammar and Spelling):</p>\n<ul className=\"list-outside list-disc pl-6\">\n  <li>Điểm: 9/10</li>\n  <li>Lý do: Bài viết không có lỗi chính tả và rất ít lỗi ngữ pháp. Các câu đều được viết đúng ngữ pháp và dễ hiểu. Tuy nhiên, có thể sử dụng một số cấu trúc ngữ pháp phức tạp hơn để làm tăng sự phong phú và đa dạng.</li>\n</ul>\n\n<p>Từ vựng (Vocabulary):</p>\n<ul className=\"list-outside list-disc pl-6\">\n  <li>Điểm: 8/10</li>\n  <li>Lý do: Từ vựng bạn sử dụng khá phong phú và phù hợp với chủ đề. Các thuật ngữ như \"flexibility,\" \"work-life balance,\" \"productivity,\" \"social interaction,\" \"collaboration,\" và \"hybrid approach\" đều là những từ vựng phù hợp với ngữ cảnh. Tuy nhiên, bạn có thể cải thiện thêm bằng cách sử dụng nhiều từ đồng nghĩa hơn hoặc các cụm từ nâng cao để tạo sự ấn tượng mạnh hơn.</li>\n</ul>"
+}

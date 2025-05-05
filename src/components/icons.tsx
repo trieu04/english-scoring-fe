@@ -18,6 +18,7 @@ import SidebarIcon from "@/assets/icons/sidebar.svg?react";
 import UploadCloudIcon from "@/assets/icons/upload-cloud.svg?react";
 import UsersIcon from "@/assets/icons/users.svg?react";
 import XIcon from "@/assets/icons/x.svg?react";
+import PauseIcon from "@/assets/icons/pause.svg?react";
 import type { SVGProps } from "react";
 
 const Icons = {
@@ -41,6 +42,7 @@ const Icons = {
   UploadCloudIcon: (props: SVGProps<SVGSVGElement>) => <UploadCloudIcon {...props} />,
   UsersIcon: (props: SVGProps<SVGSVGElement>) => <UsersIcon {...props} />,
   XIcon: (props: SVGProps<SVGSVGElement>) => <XIcon {...props} />,
+  PauseIcon: (props: SVGProps<SVGSVGElement>) => <PauseIcon {...props} />,
 };
 
 export { Icons };
