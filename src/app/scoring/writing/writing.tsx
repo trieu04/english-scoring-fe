@@ -1,9 +1,45 @@
 import Icons from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { SkillPoint } from "../components/skill-point";
+import { useQuery } from "@tanstack/react-query";
+import { Tabs } from "antd";
 import { OverallPoint } from "../components/overall-point";
+import { SkillPoint } from "../components/skill-point";
+
+interface IWritingSubmissionItem {
+  id: number;
+  no: number;
+  text: string;
+}
+
+const mockSubmissionsData: IWritingSubmissionItem[] = [
+  {
+    id: 1,
+    no: 1,
+    text: "I believe that working from home can be more effective than working in an office, but it depends on the individual and the type of work they do. One of the main benefits of working from home is flexibility. Employees can manage their time more efficiently, reducing time spent commuting and creating a better work-life balance. Additionally, working in a comfortable home environment can increase productivity for some people.\nHowever, there are downsides. Working from home can lead to a lack of social interaction, which may negatively affect teamwork and communication. For jobs that require constant collaboration, being in an office can be more effective.\nIn conclusion, while working from home offers many advantages, it is not suitable for everyone or every job. A hybrid approach might be the best solution.",
+  },
+  {
+    id: 2,
+    no: 2,
+    text: "I believe that working from home can be more effective than working in an office, but it depends on the individual and the type of work they do. One of the main benefits of working from home is flexibility. Employees can manage their time more efficiently, reducing time spent commuting and creating a better work-life balance. Additionally, working in a comfortable home environment can increase productivity for some people. However, there are downsides. Working from home can lead to a lack of social interaction, which may negatively affect teamwork and communication. For jobs that require constant collaboration, being in an office can be more effective. In conclusion, while working from home offers many advantages, it is not suitable for everyone or every job. A hybrid approach might be the best solution.\nI believe that working from home can be more effective than working in an office, but it depends on the individual and the type of work they do. One of the main benefits of working from home is flexibility. Employees can manage their time more efficiently, reducing time spent commuting and creating a better work-life balance. Additionally, working in a comfortable home environment can increase productivity for some people. However, there are downsides. Working from home can lead to a lack of social interaction, which may negatively affect teamwork and communication. For jobs that require constant collaboration, being in an office can be more effective. In conclusion, while working from home offers many advantages, it is not suitable for everyone or every job. A hybrid approach might be the best solution.",
+  },
+];
+
+async function getData() {
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 1000);
+  });
+  return mockSubmissionsData;
+}
 
 export function WritingComponent() {
+  const dataQuery = useQuery<IWritingSubmissionItem[]>({
+    queryKey: ["writing"],
+    queryFn: getData,
+    staleTime: Infinity,
+  });
+
   return (
     <div className="px-4">
       <div className="py-3 border-b-2 border-dscl-blue1">
@@ -17,27 +53,33 @@ export function WritingComponent() {
             <span>Re-Score</span>
           </Button>
         </div>
-        <div className="mt-3 p-4 bg-dscl-line rounded-md">
-          <div className="overflow-y-auto max-h-[40vh] pr-2">
-            <h4 className="font-semibold ">Task 3</h4>
-            <p className="mb-2">
-              I believe that working from home can be more effective than working in an office, but it depends on the individual and the type of work they do. One of the main benefits of working from home is flexibility. Employees can manage their time more efficiently, reducing time spent commuting and creating a better work-life balance. Additionally, working in a comfortable home environment can increase productivity for some people.
-            </p>
-            <p className="mb-2">
-              However, there are downsides. Working from home can lead to a lack of social interaction, which may negatively affect teamwork and communication. For jobs that require constant collaboration, being in an office can be more effective. In conclusion, while working from home offers many advantages, it is not suitable for everyone or every job. A hybrid approach might be the best solution.
-            </p>
-            <p className="mb-2">
-              I believe that working from home can be more effective than working in an office, but it depends on the individual and the type of work they do. One of the main benefits of working from home is flexibility. Employees can manage their time more efficiently, reducing time spent commuting and creating a better work-life balance. Additionally, working in a comfortable home environment can increase productivity for some people. However, there are downsides. Working from home can lead to a lack of social interaction, which may negatively affect teamwork and communication. For jobs that require constant collaboration, being in an office can be more effective. In conclusion, while working from home offers many advantages, it is not suitable for everyone or every job. A hybrid approach might be the best solution.
-            </p>
-            <p className="mb-2">
-              I believe that working from home can be more effective than working in an office, but it depends on the individual and the type of work they do. One of the main benefits of working from home is flexibility. Employees can manage their time more efficiently, reducing time spent commuting and creating a better work-life balance. Additionally, working in a comfortable home environment can increase
-            </p>
-            <p className="mb-2">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-            <p className="mb-2">
-              Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula eu tempor congue, eros est euismod turpis, id tincidunt sapien risus a quam. Maecenas fermentum consequat mi. Donec fermentum. Pellentesque malesuada nulla a mi. Duis sapien sem, aliquet nec, commodo eget, consequat quis, neque. Aliquam faucibus, elit ut dictum aliquet, felis nisl adipiscing sapien, sed malesuada diam lacus eget erat.
-            </p>
+        <div className="mt-3 px-4 pb-2 bg-dscl-line rounded-md">
+          <div className="overflow-y-auto pr-2">
+            {dataQuery.isLoading && <p>Loading...</p>}
+            {dataQuery.isError && (
+              <p>
+                Error:
+                {dataQuery.error.message}
+              </p>
+            )}
+            {dataQuery.isSuccess && (
+              <Tabs
+                defaultActiveKey="2"
+                items={dataQuery.data.map((item) => {
+                  return {
+                    key: String(item.id),
+                    label: <b>{`Task ${item.no}`}</b>,
+                    children: (
+                      <div className="h-64 overflow-y-auto">
+                        {item.text.split("\n").map((line, index) => (
+                          <p key={index}>{line}</p>
+                        ))}
+                      </div>
+                    ),
+                  };
+                })}
+              />
+            )}
           </div>
         </div>
       </div>
