@@ -37,7 +37,14 @@ export function SpeakingComponent() {
       </div>
 
       <div className="py-4">
-        <h3>Score version</h3>
+        <div className="flex items-center">
+          <h3 className="grow-1">Score version</h3>
+          <Button size="sm">
+            <Icons.PlusIcon className="stroke-dscl-white" />
+            <span>Save Version</span>
+          </Button>
+        </div>
+
         <div className="mt-3 flex flex-col space-y-3">
           {
             [
@@ -46,13 +53,14 @@ export function SpeakingComponent() {
               { id: 3, name: "Version 2", date: "04/12/2024", time: "12:23" },
               { id: 4, name: "Version 1", date: "04/12/2024", time: "12:23" },
             ].map(item => (
-              <div className="flex space-x-2 border-1 border-dscl-grey1 p-4 rounded-md" key={item.id}>
+              <div className="flex space-x-2 border-1 border-dscl-grey1 p-4 rounded-md items-center" key={item.id}>
                 <div className="text-dscl-main font-bold grow">{item.name}</div>
                 <Icons.ClockIcon />
-                <div>
+                <div className="flex items-center">
                   <span>{item.time}</span>
                   <span className="ml-2">{item.date}</span>
                 </div>
+                <Button className="rounded-sm py-0">Revert</Button>
               </div>
             ))
           }
