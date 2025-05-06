@@ -109,7 +109,7 @@ export function WritingComponent({ examId }: IComponentProps) {
               <div className="py-4">
                 <h3>Score</h3>
 
-                <div className="mt-3 border-1 border-dscl-main rounded-md p-4 flex justify-around">
+                <div className="mt-3 border-1 border-dscl-main rounded-md p-3 flex justify-around">
                   <OverallPoint point={getWritingScoringQuery.data.scoringDetails.overall} />
                   <SkillPoint icon={<Icons.LayersIcon className="stroke-dscl-main" />} name="Organization" point={getWritingScoringQuery.data.scoringDetails.organization} />
                   <SkillPoint icon={<Icons.BoldIcon className="stroke-dscl-main" />} name="Vocabulary" point={getWritingScoringQuery.data.scoringDetails.vocabulary} />

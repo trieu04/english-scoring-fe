@@ -122,7 +122,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
               </div>
             )}
             {getSpeakingScoringQuery.isSuccess && (
-              <div className="mt-3 border-1 border-dscl-main rounded-md p-4 grid grid-cols-2 space-y-8">
+              <div className="mt-3 py-3 border-1 border-dscl-main rounded-md justify-items-center grid grid-cols-2 gap-0 space-y-8">
                 <>
                   <OverallPoint point={getSpeakingScoringQuery.data.scoringDetails.overall} />
                   <SkillPoint icon={<Icons.MicIcon className="stroke-dscl-main" />} name="Pronunciation" point={getSpeakingScoringQuery.data.scoringDetails.pronunciation} />
@@ -165,7 +165,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
                 {
                   getSpeakingVersioningQuery.data.versions.map(item => (
                     <div className="flex space-x-2 border-1 border-dscl-grey1 p-4 rounded-md items-center" key={item.id}>
-                      <div className="text-dscl-main font-bold grow">
+                      <div className="text-dscl-main font-bold grow cursor-pointer">
                         Version
                         {" "}
                         {item.version}
@@ -175,7 +175,6 @@ export function SpeakingComponent({ examId }: IComponentProps) {
                         <span>{item.time}</span>
                         <span className="ml-2">{item.date}</span>
                       </div>
-                      <Button className="rounded-sm py-0">View</Button>
                     </div>
                   ))
                 }

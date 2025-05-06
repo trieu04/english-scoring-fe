@@ -63,7 +63,7 @@ export function AudioPlayer({ url }: IComponentProps) {
   }, [url]);
 
   return (
-    <div className="bg-dscl-second text-black flex items-center space-x-2 rounded-xl p-6">
+    <div className="bg-dscl-second text-black flex items-center space-x-2 rounded-md p-6">
       <audio
         ref={audioRef}
         onTimeUpdate={handleAudioTimeUpdate}
