@@ -19,6 +19,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           theme={{
             token: {
               fontFamily: "Helvetica, sans-serif",
+              fontSize: 16,
             }
           }}
         >

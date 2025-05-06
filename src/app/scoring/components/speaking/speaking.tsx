@@ -122,7 +122,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
               </div>
             )}
             {getSpeakingScoringQuery.isSuccess && (
-              <div className="mt-3 py-3 border-1 border-dscl-main rounded-md justify-items-center grid grid-cols-2 gap-0 space-y-8">
+              <div className="mt-3 pt-4 border-1 border-dscl-main rounded-md justify-items-center grid grid-cols-2 gap-0 space-y-8">
                 <>
                   <OverallPoint point={getSpeakingScoringQuery.data.scoringDetails.overall} />
                   <SkillPoint icon={<Icons.MicIcon className="stroke-dscl-main" />} name="Pronunciation" point={getSpeakingScoringQuery.data.scoringDetails.pronunciation} />
