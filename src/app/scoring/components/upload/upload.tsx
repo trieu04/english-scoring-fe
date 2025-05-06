@@ -29,7 +29,6 @@ export function UploadPopup({ isOpen, setIsOpen }: ComponentProps) {
         open={isOpen}
         onOk={handleOk}
         onCancel={handleCancel}
-        width="lg"
         okText="Upload"
       >
         <div className="flex">
