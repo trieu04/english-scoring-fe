@@ -5,10 +5,7 @@ export enum UserRoleEnum {
 
 export interface IUser {
   id: number;
-  email: string;
-  role: UserRoleEnum;
-  image: string;
-  imageUrl: string;
-  imageProvider: string;
   name: string;
+  email: string;
+  roles: UserRoleEnum[];
 }

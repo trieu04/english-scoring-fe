@@ -1,11 +1,9 @@
 import { createRoute } from "@tanstack/react-router";
-import { rootRoute } from "../router";
+import { workspaceRoute } from "../workspace.route";
 import { ScoringPage } from "./scoring";
 
 export const scoringRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/scoring",
+  getParentRoute: () => workspaceRoute,
+  path: "scoring",
   component: ScoringPage,
 });
-
-scoringRoute.addChildren([]);

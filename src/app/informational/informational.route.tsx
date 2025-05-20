@@ -4,10 +4,10 @@ import { aboutRoute } from "./about/about.route";
 import { contactRoute } from "./contact/contact.route";
 import { InfomationalLayout } from "./informational.layout";
 
-export const infomationalLayoutRoute = createRoute({
+export const infomationalRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "infomational",
   component: InfomationalLayout,
 });
 
-infomationalLayoutRoute.addChildren([aboutRoute, contactRoute]);
+export const infomationalRouteWithChildren = infomationalRoute.addChildren([aboutRoute, contactRoute]);

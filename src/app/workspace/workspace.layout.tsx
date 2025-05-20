@@ -1,9 +1,9 @@
 import { Outlet } from "@tanstack/react-router";
 
-export function DashboardLayout() {
+export function WorkspaceLayout() {
   return (
     <div>
-      <h2>Dashboard</h2>
+      <h1>Workspace Layout</h1>
       <Outlet />
     </div>
   );

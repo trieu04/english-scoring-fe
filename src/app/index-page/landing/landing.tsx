@@ -6,7 +6,7 @@ import { Link } from "@tanstack/react-router";
 export function LandingComponent() {
   return (
     <div className="w-full h-screen flex flex-col items-center justify-center bg-dscl-blue1">
-      <Logos.EnglishScoringLogo1 className="w-1/2 h-1/2" />
+      <Logos.EnglishScoringLogo className="w-1/2 h-1/2" />
       <Link to="/scoring">
         <Button>
           Get Started

@@ -11,7 +11,7 @@ export function ScoringPage() {
     <div className="bg-dscl-blue1 min-h-screen">
       <header className="flex items-center h-[var(--header-height)] sticky top-0 bg-dscl-blue1 z-50 shadow-md mb-2">
         <div className="mx-3">
-          <Logos.EnglishScoringLogo1 />
+          <Logos.EnglishScoringLogo />
         </div>
       </header>
       <div className="flex space-x-3 px-3">

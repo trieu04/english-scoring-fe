@@ -1,67 +1,63 @@
+import { localAccessToken } from "@/storage/local";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createContext, ReactNode, useCallback, useContext, useMemo } from "react";
-import { getMeApi, LoginResponse } from "../api/auth.api";
-import { LOCAL_STORAGE_KEY } from "../constants/local-storage.constant";
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from "react";
+import { getProfileApi, ILoginCredentials, ILoginResponse, loginApi } from "../api/auth.api";
 import { IUser } from "../types/user";
 
-type LoginFn = () => Promise<LoginResponse>;
-type LogoutFn = () => Promise<any>;
 export interface IAuthContext {
   user: IUser | null;
+  isLoggedIn: boolean;
   isLoading: boolean;
-  login: (loginFn: LoginFn) => Promise<LoginResponse>;
-  logout: (logoutFn?: LogoutFn) => Promise<any>;
+  login: (credentials: ILoginCredentials) => Promise<ILoginResponse>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<IAuthContext | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const { data: user, isLoading } = useQuery<IUser | null>({
-    queryKey: ["auth", "user"],
-    queryFn: async () => {
-      const storedToken = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-      if (!storedToken)
-        return null;
-      const data = await getMeApi();
-      return data;
-    },
+  const { data: user, isLoading, refetch: refetchUser } = useQuery<IUser | null>({
+    queryKey: ["auth_user"],
+    queryFn: () => getProfileApi(),
     initialData: null,
   });
 
   const loginMutation = useMutation({
-    mutationFn: async (loginFn: LoginFn) => loginFn(),
+    mutationFn: (credential: ILoginCredentials) => loginApi(credential),
     onSuccess: (data) => {
-      localStorage.setItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN, data.accessToken);
-      queryClient.setQueryData(["auth", "user"], data.user);
+      localAccessToken.set(data.accessToken);
+      setIsLoggedIn(true);
+      refetchUser();
+
+      return data;
     },
   });
 
   const logoutMutation = useMutation({
-    mutationFn: async (logoutFn: LogoutFn) => logoutFn(),
+    mutationFn: async () => { },
     onSuccess: () => {
-      localStorage.removeItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-      queryClient.setQueryData(["auth", "user"], null);
+      localAccessToken.remove();
+      queryClient.setQueryData(["auth_user"], null);
+      setIsLoggedIn(false);
     },
   });
 
-  const loginUser = useCallback(async (loginFn: LoginFn) => {
-    return await loginMutation.mutateAsync(loginFn);
-  }, [loginMutation]);
+  const login = useCallback(
+    (credentials: ILoginCredentials) => loginMutation.mutateAsync(credentials),
+    [loginMutation],
+  );
 
-  const logoutUser = useCallback(async (logoutFn: LogoutFn = () => Promise.resolve(null)) => {
-    return await logoutMutation.mutateAsync(logoutFn);
-  }, [logoutMutation]);
+  const logout = useCallback(
+    () => logoutMutation.mutateAsync(),
+    [logoutMutation],
+  );
 
-  const authContextValue = useMemo(() => {
-    return {
-      user,
-      isLoading,
-      login: loginUser,
-      logout: logoutUser,
-    };
-  }, [user, isLoading, loginUser, logoutUser]);
+  const authContextValue = useMemo(
+    () => ({ user, isLoggedIn, isLoading, login, logout }),
+    [user, isLoggedIn, isLoading, login, logout],
+  );
 
   return (
     <AuthContext.Provider value={authContextValue}>

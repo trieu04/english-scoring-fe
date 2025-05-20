@@ -1,7 +1,7 @@
 import { IUser } from "@/types/user";
 import { api } from "./api";
 
-export interface LoginResponse {
+export interface ILoginResponse {
   accessToken: string;
   user: IUser;
 }
@@ -9,7 +9,7 @@ export interface ILoginCredentials {
   username: string;
   password: string;
 }
-export interface SignupResponse {
+export interface ISignupResponse {
   accessToken: string;
   user: IUser;
 }
@@ -19,22 +19,22 @@ export interface ISignupCredentials {
   password: string;
 }
 
-export async function loginApi(credentials: ILoginCredentials): Promise<LoginResponse> {
-  const response = await api.post<LoginResponse>("/auth/sign-in", credentials);
+export async function loginApi(credentials: ILoginCredentials) {
+  const response = await api.post<ILoginResponse>("/auth/sign-in", credentials);
   return response.data;
 }
 
-export async function googleLoginApi(code: string): Promise<LoginResponse> {
-  const response = await api.post<LoginResponse>("/auth/google", { code });
+export async function googleLoginApi(code: string) {
+  const response = await api.post<ILoginResponse>("/auth/google", { code });
   return response.data;
 }
 
-export async function getMeApi(): Promise<IUser> {
+export async function getProfileApi(): Promise<IUser> {
   const response = await api.get<IUser>("/auth/me");
   return response.data;
 }
 
-export async function signupApi(credentials: ISignupCredentials): Promise<SignupResponse> {
-  const response = await api.post<SignupResponse>("/auth/sign-up", credentials);
+export async function signupApi(credentials: ISignupCredentials) {
+  const response = await api.post<ISignupResponse>("/auth/sign-up", credentials);
   return response.data;
 }

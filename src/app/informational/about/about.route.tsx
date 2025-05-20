@@ -1,9 +1,9 @@
 import { createRoute } from "@tanstack/react-router";
 import { ContactPage } from "../contact/contact";
-import { infomationalLayoutRoute } from "../informational.route";
+import { infomationalRoute } from "../informational.route";
 
 export const aboutRoute = createRoute({
-  getParentRoute: () => infomationalLayoutRoute,
+  getParentRoute: () => infomationalRoute,
   path: "contact",
   component: ContactPage,
 });
