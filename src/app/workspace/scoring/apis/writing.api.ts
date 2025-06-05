@@ -1,4 +1,4 @@
-import { api } from "@/api/api";
+import { mockApi } from "@/api/api";
 
 export interface IWritingSubmission {
   id: number;
@@ -21,9 +21,9 @@ export interface IWritingScoring {
 }
 
 export async function getWritingSubmissionsData(examId: number) {
-  return api.get<IWritingSubmission>(`/mocks/scoring/${examId}/writing-submission.json`).then(res => res.data);
+  return mockApi.get<IWritingSubmission>(`/mocks/scoring/${examId}/writing-submission.json`).then(res => res.data);
 }
 
 export async function getWritingScoringData(examId: number) {
-  return api.get<IWritingScoring>(`/mocks/scoring/${examId}/writing-scoring.json`).then(res => res.data);
+  return mockApi.get<IWritingScoring>(`/mocks/scoring/${examId}/writing-scoring.json`).then(res => res.data);
 }

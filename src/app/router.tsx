@@ -1,5 +1,4 @@
 import { createRootRoute, createRouter, Outlet } from "@tanstack/react-router";
-import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { NotFound } from "../components/error/not-found";
 import { authRouteWithChildren } from "./auth/auth.route";
 import { indexPageRoute } from "./index-page/index-page.route";
@@ -11,7 +10,6 @@ export const rootRoute = createRootRoute({
   component: () => (
     <>
       <Outlet />
-      <TanStackRouterDevtools />
     </>
   ),
   notFoundComponent: () => <NotFound />,

@@ -1,6 +1,8 @@
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/auth.provider";
-import { useNavigate } from "@tanstack/react-router";
-import { notification, Spin } from "antd";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { Input, notification } from "antd";
+import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
 import { useState } from "react";
 
 export function LoginPage() {
@@ -8,12 +10,20 @@ export function LoginPage() {
   const [loginFormData, setLoginFormData] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSuccessLogin = () => {
     const searchParams = new URLSearchParams(window.location.search);
     let nextUrl = searchParams.get("next");
+    notification.success({
+      message: "Login successful",
+      duration: 2,
+    });
     if (!nextUrl) {
-      nextUrl = "/dashboard";
+      nextUrl = "/upload";
     }
     if (nextUrl) {
       navigate({ to: nextUrl });
@@ -31,7 +41,7 @@ export function LoginPage() {
       else if (Array.isArray(error.message)) {
         notification.error({
           message: "Login failed",
-          description: error.message.join(","),
+          description: error.message.join(", "),
         });
       }
       else {
@@ -71,32 +81,47 @@ export function LoginPage() {
 
   return (
     <form onSubmit={handleLoginSubmit} className="rounded-lg p-8 w-full max-w-lg">
-      <div className="mb-4">
-        <label className="block mb-1">Username or Email</label>
-        <input
-          name="username"
-          className="w-full p-2 bg-white border border-gray-300 rounded-md focus:border-[#3E784E] outline-none"
-          placeholder="email"
-          required
-          value={loginFormData.username}
-          onChange={handleLoginInputChange}
-        />
+      <div className="mb-14 flex items-center justify-center">
+        <h2 className="text-4xl">Sign In</h2>
       </div>
-      <div className="mb-6">
-        <label className="block mb-1">Password</label>
-        <input
-          type="password"
-          name="password"
-          className="w-full p-2 bg-white border border-gray-300 rounded-md focus-within:border-[#3E784E] outline-none"
-          placeholder="password"
-          required
-          value={loginFormData.password}
-          onChange={handleLoginInputChange}
-        />
+      <div className="w-full max-w-lg space-y-4">
+        <div>
+          <label className="mb-2">Email</label>
+          <Input
+            placeholder="Email"
+            className="border-0 focus-visible:ring-0 shadow-none"
+            prefix={<MailIcon className="h-5 w-5 text-muted-foreground" />}
+            value={loginFormData.username}
+            onChange={handleLoginInputChange}
+            name="username"
+          />
+        </div>
+        <div>
+          <label className="mb-2">Password</label>
+          <Input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password"
+            className="border-0 focus-visible:ring-0 shadow-none"
+            prefix={<LockIcon className="h-5 w-5 text-muted-foreground" />}
+            suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
+            value={loginFormData.password}
+            onChange={handleLoginInputChange}
+            name="password"
+          />
+        </div>
+        <div className="flex flex-row-reverse">
+          <Button variant="link">Forgot password</Button>
+        </div>
+        <div className="mb-8">
+          <Button className="w-full" disabled={loading}>Log In</Button>
+        </div>
+        <div className="flex flex-col items-center">
+          <div>New to English Scoring</div>
+          <Link to="/signup">
+            <Button variant="ghost">Sign Up</Button>
+          </Link>
+        </div>
       </div>
-      <button type="submit" disabled={loading} className="w-full bg-[#3E784E] text-white py-2 rounded-md disabled:opacity-75 cursor-pointer transition">
-        {loading ? <Spin /> : "Login"}
-      </button>
     </form>
   );
 }

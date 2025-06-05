@@ -60,7 +60,8 @@ export function AudioPlayer({ url }: IComponentProps) {
         audioRef.current.play();
       }
     }
-  }, [url]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="bg-dscl-second text-black flex items-center space-x-2 rounded-md p-6">

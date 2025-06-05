@@ -1,4 +1,4 @@
-import { api } from "@/api/api";
+import { mockApi } from "@/api/api";
 
 export interface ISpeckingSubmission {
   id: number;
@@ -36,13 +36,13 @@ export interface ISpeakingVersions {
 }
 
 export async function getSpeakingSubmissionData(examId: number) {
-  return api.get<ISpeckingSubmission>(`/mocks/scoring/${examId}/speaking-submission.json`).then(res => res.data);
+  return mockApi.get<ISpeckingSubmission>(`/mocks/scoring/${examId}/speaking-submission.json`).then(res => res.data);
 }
 
 export async function getSpeakingScoringData(examId: number) {
-  return api.get<ISpeckingScoring>(`/mocks/scoring/${examId}/speaking-scoring.json`).then(res => res.data);
+  return mockApi.get<ISpeckingScoring>(`/mocks/scoring/${examId}/speaking-scoring.json`).then(res => res.data);
 }
 
 export async function getSpeakingVersioningData(examId: number) {
-  return api.get<ISpeakingVersions>(`/mocks/scoring/${examId}/speaking-versions.json`).then(res => res.data);
+  return mockApi.get<ISpeakingVersions>(`/mocks/scoring/${examId}/speaking-versions.json`).then(res => res.data);
 }

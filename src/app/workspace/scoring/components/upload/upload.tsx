@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Upload, Modal, Button } from "antd";
+import { Upload, Modal } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadFile } from "antd/es/upload/interface";
 
@@ -9,9 +9,9 @@ interface ComponentProps {
 }
 
 export function UploadPopup({ isOpen, setIsOpen }: ComponentProps) {
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [_fileList, setFileList] = useState<UploadFile[]>([]);
 
-  const handleUploadChange = ({ fileList }: { fileList: UploadFile[] }) => {
+  const _handleUploadChange = ({ fileList }: { fileList: UploadFile[] }) => {
     setFileList(fileList);
   };
   const handleOk = () => {

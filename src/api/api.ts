@@ -17,9 +17,21 @@ export const api = Axios.create({
   },
 });
 
+export const mockApi = Axios.create({
+  baseURL: "/",
+  headers: {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  },
+});
+
 api.interceptors.request.use(authRequestInterceptor);
 api.interceptors.request.use(mocksDelayInterceptor);
 api.interceptors.response.use(undefined, apiErrorInterceptor);
+
+mockApi.interceptors.request.use(authRequestInterceptor);
+mockApi.interceptors.request.use(mocksDelayInterceptor);
+mockApi.interceptors.response.use(undefined, apiErrorInterceptor);
 
 function mocksDelayInterceptor(config: InternalAxiosRequestConfig): Promise<InternalAxiosRequestConfig> {
   if (config.url?.startsWith("/mocks")) {

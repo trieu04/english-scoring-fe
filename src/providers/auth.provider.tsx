@@ -1,7 +1,7 @@
 import { localAccessToken } from "@/storage/local";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from "react";
-import { getProfileApi, ILoginCredentials, ILoginResponse, loginApi } from "../api/auth.api";
+import { getProfileApi, ILoginCredentials, ILoginResponse, ISignupCredentials, loginApi, signupApi } from "../api/auth.api";
 import { IUser } from "../types/user";
 
 export interface IAuthContext {
@@ -9,6 +9,7 @@ export interface IAuthContext {
   isLoggedIn: boolean;
   isLoading: boolean;
   login: (credentials: ILoginCredentials) => Promise<ILoginResponse>;
+  signup: (credentials: ISignupCredentials) => Promise<ILoginResponse>;
   logout: () => Promise<void>;
 }
 
@@ -26,6 +27,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginMutation = useMutation({
     mutationFn: (credential: ILoginCredentials) => loginApi(credential),
+    onSuccess: (data) => {
+      localAccessToken.set(data.accessToken);
+      setIsLoggedIn(true);
+      refetchUser();
+
+      return data;
+    },
+  });
+
+  const signupMutation = useMutation({
+    mutationFn: (credential: ISignupCredentials) => signupApi(credential),
     onSuccess: (data) => {
       localAccessToken.set(data.accessToken);
       setIsLoggedIn(true);
@@ -54,9 +66,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [logoutMutation],
   );
 
+  const signup = useCallback(
+    (credentials: ISignupCredentials) => signupMutation.mutateAsync(credentials),
+    [signupMutation],
+  );
+
   const authContextValue = useMemo(
-    () => ({ user, isLoggedIn, isLoading, login, logout }),
-    [user, isLoggedIn, isLoading, login, logout],
+    () => ({ user, isLoggedIn, isLoading, login, logout, signup }),
+    [user, isLoggedIn, isLoading, login, logout, signup],
   );
 
   return (

@@ -1,5 +1,4 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { AuthProvider } from "../providers/auth.provider";
 import { ConfigProvider } from "antd";
 
@@ -20,13 +19,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             token: {
               fontFamily: "Helvetica, sans-serif",
               fontSize: 16,
-            }
+            },
           }}
         >
           {children}
         </ConfigProvider>
       </AuthProvider>
-      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 }

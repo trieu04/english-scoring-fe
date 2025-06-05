@@ -6,4 +6,9 @@ export const scoringRoute = createRoute({
   getParentRoute: () => workspaceRoute,
   path: "scoring",
   component: ScoringPage,
+  validateSearch: (search) => {
+    return {
+      exam: search.exam ?? undefined,
+    };
+  },
 });

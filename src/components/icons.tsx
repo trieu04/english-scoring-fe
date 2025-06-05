@@ -19,6 +19,8 @@ import UploadCloudIcon from "@/assets/icons/upload-cloud.svg?react";
 import UsersIcon from "@/assets/icons/users.svg?react";
 import XIcon from "@/assets/icons/x.svg?react";
 import PauseIcon from "@/assets/icons/pause.svg?react";
+import PenWorkspaceIcon from "@/assets/icons/pen-workspace.svg?react";
+import IeltsIcon from "@/assets/icons/ielts.svg?react";
 import type { SVGProps } from "react";
 
 const Icons = {
@@ -43,6 +45,8 @@ const Icons = {
   UsersIcon: (props: SVGProps<SVGSVGElement>) => <UsersIcon {...props} />,
   XIcon: (props: SVGProps<SVGSVGElement>) => <XIcon {...props} />,
   PauseIcon: (props: SVGProps<SVGSVGElement>) => <PauseIcon {...props} />,
+  PenWorkspaceIcon: (props: SVGProps<SVGSVGElement>) => <PenWorkspaceIcon {...props} />,
+  IeltsIcon: (props: SVGProps<SVGSVGElement>) => <IeltsIcon {...props} />,
 };
 
 export { Icons };
