@@ -1,6 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AuthProvider } from "../providers/auth.provider";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ConfigProvider } from "antd";
+import { AuthProvider } from "../features/auth/context";
+import { router } from "./router";
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const queryClient = new QueryClient({
@@ -23,6 +26,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           }}
         >
           {children}
+          <TanStackRouterDevtools initialIsOpen={false} router={router} />
+          <ReactQueryDevtools initialIsOpen={false} />
         </ConfigProvider>
       </AuthProvider>
     </QueryClientProvider>

@@ -1,10 +1,10 @@
+import { testRouteTree } from "@/features/test/route";
 import { createRootRoute, createRouter, Outlet } from "@tanstack/react-router";
 import { NotFound } from "../components/error/not-found";
-import { authRouteWithChildren } from "./auth/auth.route";
-import { indexPageRoute } from "./index-page/index-page.route";
-import { infomationalRouteWithChildren } from "./informational/informational.route";
-import { testRoute } from "./test/test.route";
-import { workspaceRouteWithChilren } from "./workspace/workspace.route";
+import { authRouteTree } from "../features/auth/route";
+import { indexPageRouteTree } from "../features/index-page/route";
+import { informationalRouteTree } from "../features/informational/route";
+import { mainAppRouteTree } from "../features/main-app/route";
 
 export const rootRoute = createRootRoute({
   component: () => (
@@ -16,11 +16,11 @@ export const rootRoute = createRootRoute({
 });
 
 export const routeTree = rootRoute.addChildren([
-  indexPageRoute,
-  authRouteWithChildren,
-  workspaceRouteWithChilren,
-  infomationalRouteWithChildren,
-  testRoute,
+  indexPageRouteTree,
+  authRouteTree,
+  mainAppRouteTree,
+  informationalRouteTree,
+  testRouteTree,
 ]);
 
 export const router = createRouter({ routeTree });
