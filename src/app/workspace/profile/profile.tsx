@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 
 export function DashboardProfilePage() {
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-6 bg-white rounded-lg shadow-md mx-4">
       <h1 className="text-2xl font-semibold mb-1">My account</h1>
       <p className="text-gray-500 mb-6">Manage profile information</p>
 
@@ -87,6 +87,21 @@ export function DashboardProfilePage() {
                 readOnly
               />
             </div>
+          </div>
+
+          <div className="md:col-span-2 flex justify-end gap-3 pt-4">
+            <button
+              type="button"
+              className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
+            >
+              Save
+            </button>
           </div>
         </div>
       </div>
