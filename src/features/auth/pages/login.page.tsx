@@ -53,47 +53,83 @@ export function LoginPage() {
   const loading = auth.loginMutation.isPending;
 
   return (
-    <form onSubmit={handleLoginSubmit} className="rounded-lg p-8 w-full max-w-lg">
-      <div className="mb-14 flex items-center justify-center">
-        <h2 className="text-4xl">Sign In</h2>
+    <form
+      onSubmit={handleLoginSubmit}
+      className="w-full max-w-xl mx-auto px-4 py-16 md:py-28 flex flex-col items-center gap-10"
+    >
+      <h1 className="text-3xl md:text-5xl font-bold text-stone-950 text-center font-['Open_Sans']">Sign in</h1>
+
+      <div className="w-full flex flex-col items-center gap-6">
+        {/* Email Field */}
+        <div className="w-full flex flex-col gap-2">
+          <label htmlFor="username" className="text-base text-neutral-800 font-['Open_Sans']">
+            Email address
+          </label>
+          <div className="self-stretch h-12 px-3 rounded-lg outline outline-1 outline-offset-[-1px] outline-neutral-300 focus-within:outline-cyan-700 inline-flex justify-start items-center gap-2 overflow-hidden">
+            <MailIcon className="w-5 h-5 text-stone-500 mr-2" />
+            <input
+              id="username"
+              name="username"
+              type="email"
+              placeholder="you@example.com"
+              value={loginFormData.username}
+              onChange={handleLoginInputChange}
+              required
+              className="flex-1 outline-none text-base text-neutral-800 bg-transparent font-['Open_Sans']"
+            />
+          </div>
+        </div>
+
+        {/* Password Field */}
+        <div className="w-full flex flex-col gap-2">
+          <label htmlFor="password" className="text-base text-stone-950 font-['Open_Sans']">
+            Password
+          </label>
+          <div className="self-stretch h-12 px-3 rounded-lg outline outline-1 outline-offset-[-1px] outline-neutral-300 focus-within:outline-cyan-700 inline-flex justify-between items-center gap-2 overflow-hidden">
+            <LockIcon className="w-5 h-5 text-stone-500 mr-2" />
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              placeholder="Your password"
+              value={loginFormData.password}
+              onChange={handleLoginInputChange}
+              required
+              className="flex-1 outline-none text-base text-neutral-800 bg-transparent font-['Open_Sans']"
+            />
+            <button type="button" onClick={togglePasswordVisibility}>
+              {showPassword ? (
+                <EyeOffIcon className="w-5 h-5 text-stone-500" />
+              ) : (
+                <EyeIcon className="w-5 h-5 text-stone-500" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Forgot password */}
+        <div className="w-full text-right">
+          <Button variant="link" className="text-cyan-700 text-sm">
+            Forgot password
+          </Button>
+        </div>
+
+        {/* Submit Button */}
+        <Button
+          type="submit"
+          className="w-full md:w-60 rounded-full bg-cyan-700 text-white"
+          disabled={loading}
+        >
+          Sign in
+        </Button>
       </div>
-      <div className="w-full max-w-lg space-y-4">
-        <div>
-          <label className="mb-2">Email</label>
-          <Input
-            placeholder="Email"
-            className="border-0 focus-visible:ring-0 shadow-none"
-            prefix={<MailIcon className="h-5 w-5 text-muted-foreground" />}
-            value={loginFormData.username}
-            onChange={handleLoginInputChange}
-            name="username"
-          />
-        </div>
-        <div>
-          <label className="mb-2">Password</label>
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="border-0 focus-visible:ring-0 shadow-none"
-            prefix={<LockIcon className="h-5 w-5 text-muted-foreground" />}
-            suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
-            value={loginFormData.password}
-            onChange={handleLoginInputChange}
-            name="password"
-          />
-        </div>
-        <div className="flex flex-row-reverse">
-          <Button variant="link">Forgot password</Button>
-        </div>
-        <div className="mb-8">
-          <Button className="w-full" disabled={loading}>Log In</Button>
-        </div>
-        <div className="flex flex-col items-center">
-          <div>New to English Scoring</div>
-          <Link to="/signup">
-            <Button variant="ghost">Sign Up</Button>
-          </Link>
-        </div>
+
+      {/* Footer */}
+      <div className="text-center">
+        <p className="text-stone-950 text-sm">New to English Scoring?</p>
+        <Link to="/signup" className="text-cyan-700 text-sm">
+          Create an account
+        </Link>
       </div>
     </form>
   );

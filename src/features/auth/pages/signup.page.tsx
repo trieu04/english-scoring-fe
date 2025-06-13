@@ -60,69 +60,100 @@ export function SignupPage() {
   const loading = auth.signupMutation.isPending;
 
   return (
-    <form onSubmit={handleSignupSubmit} className="rounded-lg p-8 w-full max-w-lg">
-      <div className="mb-14 flex items-center justify-center">
-        <h2 className="text-4xl">Sign Up</h2>
+    <form
+      onSubmit={handleSignupSubmit}
+      className="w-full max-w-xl mx-auto px-4 py-16 md:py-28 flex flex-col items-center gap-10 "
+    >
+      <div className="text-center text-stone-950 text-4xl md:text-6xl font-bold font-['Open_Sans']">
+        Sign up
       </div>
-      <div className="w-full max-w-lg space-y-4">
-        <div>
-          <label className="mb-2">Email</label>
-          <Input
-            placeholder="Email"
-            className="border-0 focus-visible:ring-0 shadow-none"
-            prefix={<MailIcon className="h-5 w-5 text-muted-foreground" />}
+
+      <div className="w-full flex flex-col justify-start items-center gap-6">
+        {/* Email */}
+        <div className="w-full flex flex-col gap-2 max-w-md">
+          <label className="text-stone-950 text-base font-normal">Email address</label>
+          <input
+            type="email"
+            name="email"
+            placeholder="Your email"
             value={loginFormData.email}
             onChange={handleLoginInputChange}
-            name="email"
+            className="h-12 px-3 rounded-lg outline outline-1 outline-neutral-300 text-neutral-800 placeholder-neutral-300"
+            required
           />
         </div>
-        <div>
-          <label className="mb-2">Name</label>
-          <Input
-            placeholder="Name"
-            className="border-0 focus-visible:ring-0 shadow-none"
-            prefix={<UserIcon className="h-5 w-5 text-muted-foreground" />}
+
+        {/* Full name */}
+        <div className="w-full flex flex-col gap-2 max-w-md">
+          <label className="text-stone-950 text-base font-normal">Full name</label>
+          <input
+            type="text"
+            name="fullname"
+            placeholder="Full name"
             value={loginFormData.name}
             onChange={handleLoginInputChange}
-            name="name"
+            className="h-12 px-3 rounded-lg outline outline-1 outline-neutral-300 text-neutral-800 placeholder-neutral-300"
+            required
           />
         </div>
-        <div>
-          <label className="mb-2">Password</label>
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="border-0 focus-visible:ring-0 shadow-none"
-            prefix={<LockIcon className="h-5 w-5 text-muted-foreground" />}
-            suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
-            value={loginFormData.password}
-            onChange={handleLoginInputChange}
-            name="password"
-          />
+
+        {/* Password */}
+        <div className="w-full flex flex-col gap-2 max-w-md">
+          <label className="text-stone-950 text-base font-normal">Password</label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Your password"
+              value={loginFormData.password}
+              onChange={handleLoginInputChange}
+              className="w-full h-12 px-3 pr-10 rounded-lg outline outline-1 outline-neutral-300 text-neutral-800 placeholder-neutral-300"
+              required
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-cyan-700"
+            >
+              {showPassword ? "Hide" : "Show"}
+            </button>
+          </div>
+          <p className="text-stone-500 text-sm">This is a caption under a text input.</p>
         </div>
-        <div>
-          <label className="mb-2">Confirm Password</label>
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            className="border-0 focus-visible:ring-0 shadow-none"
-            prefix={<LockIcon className="h-5 w-5 text-muted-foreground" />}
-            suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
+
+        {/* Confirm Password */}
+        <div className="w-full flex flex-col gap-2 max-w-md">
+          <label className="text-stone-950 text-base font-normal">Confirm Password</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirm password"
             value={loginFormData.confirmPassword}
             onChange={handleLoginInputChange}
-            name="confirmPassword"
+            className="h-12 px-3 rounded-lg outline outline-1 outline-neutral-300 text-neutral-800 placeholder-neutral-300"
+            required
           />
         </div>
-        <div className="mb-8">
-          <Button className="w-full" disabled={loading}>Sign Up</Button>
+
+        {/* Forgot password */}
+        <div className="w-full max-w-md text-right text-cyan-700 text-sm md:text-base font-normal">
+          Forgot password?
         </div>
-        <div className="flex flex-col items-center">
-          <div>Already have an account?</div>
-          <Link to="/login">
-            <Button variant="ghost">Login</Button>
-          </Link>
-        </div>
+
+        {/* Submit */}
+        <button
+          type="submit"
+          className="w-60 px-4 h-12 bg-cyan-700 rounded-[32px] text-white font-['Open_Sans']"
+        >
+          Sign up
+        </button>
+      </div>
+
+      {/* Already have account */}
+      <div className="flex flex-col justify-start items-center gap-1 mt-4">
+        <div className="text-stone-950 text-base font-normal">Already have an account?</div>
+        <a href="/login" className="text-cyan-700 text-base font-normal">Sign in</a>
       </div>
     </form>
   );
-}
+};
