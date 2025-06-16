@@ -1,18 +1,28 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent , CardFooter} from "@/components/ui/card";
 import { Select, DatePicker } from "antd";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
 import Icons from "@/components/icons";
 import Illustrations from "@/components/illustrations";
 
-const scoringSystems = [
+type ScoringSystemKey = 'vstep' | 'ielts' | 'aptis' | 'other';
+
+interface ScoringSystem {
+  key: ScoringSystemKey;
+  label: string;
+  color: string;
+  icon: React.ReactNode;
+}
+
+const scoringSystems: ScoringSystem[] = [
   { key: "vstep", label: "Vstep", color: "bg-sky-200", icon: <Icons.ExamMultipleChoiceIcon className="w-6 h-6 text-sky-700" /> },
   { key: "ielts", label: "IELTS", color: "bg-red-200", icon: <Icons.IeltsIcon className="w-6 h-6 text-red-700" /> },
   { key: "aptis", label: "Aptis", color: "bg-green-200", icon: <Icons.BookOpenIcon className="w-6 h-6 text-green-700" /> },
   { key: "other", label: "Other", color: "bg-indigo-200", icon: <Icons.FileTextIcon className="w-6 h-6 text-indigo-700" /> },
 ];
 
-const scoringSystemCounts = {
+const scoringSystemCounts: Record<ScoringSystemKey, number> = {
   vstep: 600,
   ielts: 600,
   aptis: 600,
@@ -28,21 +38,34 @@ const barChartData = {
 
 const historySubmissions = [
   { id: 1, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 2, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-  { id: 3, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 4, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-  { id: 5, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 6, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-  { id: 7, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 8, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-  { id: 9, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 10, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
+  { id: 2, name: "Kip 2, 09/10/2024", time: "12:24", date: "04/12/2024" },
+  { id: 3, name: "Kì thi nội bộ 13/4", time: "10:23", date: "04/12/2024" },
+  { id: 4, name: "Thi HSG cấp trường", time: "09:23", date: "04/12/2024" },
+  { id: 5, name: "Nguyễn Xuân Hoa", time: "08:23", date: "04/12/2024" },
+  { id: 6, name: "Kip 1", time: "18:23", date: "04/12/2024" },
+  { id: 7, name: "Thi nội bộ ", time: "22:23", date: "04/12/2024" },
+  { id: 8, name: "Thi cấp Tỉnh", time: "19:23", date: "04/12/2024" },
+  { id: 9, name: "Kiểm tra tuần", time: "01:23", date: "04/12/2024" },
+  { id: 10, name: "Lấy chứng chỉ", time: "00:23", date: "04/12/2024" },
+  { id: 11, name: "Thi HSG cấp trường", time: "09:23", date: "04/12/2024" },
+  { id: 12, name: "Nguyễn Xuân Hoa", time: "08:23", date: "04/12/2024" },
+  { id: 13, name: "Kip 1", time: "18:23", date: "04/12/2024" },
+  { id: 14, name: "Thi nội bộ ", time: "22:23", date: "04/12/2024" },
+  { id: 15, name: "Thi cấp Tỉnh", time: "19:23", date: "04/12/2024" },
+  { id: 16, name: "Kiểm tra tuần", time: "01:23", date: "04/12/2024" },
+  { id: 17, name: "Lấy chứng chỉ", time: "00:23", date: "04/12/2024" },
 ];
 
 export function DashboardPage() {
   const [scoringSystem, setScoringSystem] = useState();
   const [task, setTask] = useState();
   const [dateRange, setDateRange] = useState([null, null]);
+
+  const handleFilter = () => {
+    console.log("Filtering with:", { scoringSystem, task, dateRange });
+    // Gọi API hoặc cập nhật dữ liệu tại đây
+  };
+  
 
   return (
     <div className="flex gap-6 h-full p-6 bg-[#f7f9fa]">
@@ -63,9 +86,9 @@ export function DashboardPage() {
         {/* Middle: Scoring system + Chart */}
         <div className="flex gap-6">
           {/* Scoring system summary */}
-          <Card className="flex-1 bg-[#eaf6fb] p-0 min-w-[220px] max-w-[260px]">
+          <Card className="flex-1 bg-[#eaf6fb] p-0 min-w-[200px] max-w-[350px]">
             <CardHeader className="pb-2 pt-4">
-              <CardTitle className="text-base">Scoring system</CardTitle>
+              <CardTitle className="text-base">Submissions per Scoring System</CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-4">
               <div className="flex flex-col gap-4">
@@ -82,7 +105,7 @@ export function DashboardPage() {
             </CardContent>
           </Card>
           {/* Chart */}
-          <Card className="flex-[2] bg-[#fff7ec] p-0">
+          <Card className="flex-[2] bg-[#fff7ec] p-0 min-w-[350px]">
             <CardHeader className="pb-2 pt-4">
               <CardTitle className="text-base">Scoring distribution all submissions</CardTitle>
             </CardHeader>
@@ -98,19 +121,31 @@ export function DashboardPage() {
           </Card>
         </div>
         {/* Bottom: Scoring filter */}
-        <Card className="p-6">
-          <div className="flex flex-wrap gap-4 items-center">
-            <div className="flex flex-col min-w-[180px]">
+        <Card className="p-6 w-full bg-white">
+        {/* Title */}
+        <CardHeader className="pb-2 pt-4">
+          <CardTitle className="text-base">Scoring Filter</CardTitle>
+        </CardHeader>
+        {/* <div className="mb-6 text-xl font-semibold text-neutral-800">
+          Scoring Filter
+        </div> */}
+
+        {/* Content in two rows */}
+
+        <CardContent className="flex flex-col gap-4">
+          {/* Row 1 */}
+          <div className="flex gap-15">
+            <div className="flex flex-col flex-1">
               <span className="mb-1 text-sm text-gray-500">Scoring System</span>
               <Select
                 placeholder="Scoring System"
                 value={scoringSystem}
                 onChange={setScoringSystem}
-                options={scoringSystems.map(s => ({ label: s.label, value: s.key }))}
+                options={scoringSystems.map((s) => ({ label: s.label, value: s.key }))}
                 style={{ width: "100%" }}
               />
             </div>
-            <div className="flex flex-col min-w-[180px]">
+            <div className="flex flex-col flex-1">
               <span className="mb-1 text-sm text-gray-500">Task</span>
               <Select
                 placeholder="Task"
@@ -124,36 +159,53 @@ export function DashboardPage() {
                 style={{ width: "100%" }}
               />
             </div>
-            <div className="flex flex-col min-w-[180px]">
-              <span className="mb-1 text-sm text-gray-500">Start day</span>
+          </div>
+
+          {/* Row 2 */}
+          <div className="flex gap-15">
+            <div className="flex flex-col flex-1">
+              <span className="mb-1 text-sm text-gray-500">Start Date</span>
               <DatePicker
-                placeholder="Start day"
+                placeholder="Start date"
                 value={dateRange[0]}
-                onChange={date => setDateRange([date, dateRange[1]])}
+                onChange={(date) => setDateRange([date, dateRange[1]])}
                 style={{ width: "100%" }}
               />
             </div>
-            <div className="flex flex-col min-w-[180px]">
-              <span className="mb-1 text-sm text-gray-500">End date</span>
+            <div className="flex flex-col flex-1">
+              <span className="mb-1 text-sm text-gray-500">End Date</span>
               <DatePicker
                 placeholder="End date"
                 value={dateRange[1]}
-                onChange={date => setDateRange([dateRange[0], date])}
+                onChange={(date) => setDateRange([dateRange[0], date])}
                 style={{ width: "100%" }}
               />
             </div>
           </div>
-        </Card>
+        </CardContent>
+        {/* Nút Filter */}
+        <CardFooter className="pt-4 flex justify-end">
+          <button
+            onClick={handleFilter}
+            className="bg-cyan-500 hover:bg-cyan-700 text-white text-sm font-semibold py-2 px-6 rounded-lg shadow">
+            Analysis
+          </button>
+        </CardFooter>
+      </Card>
       </div>
       {/* Right: History */}
       <div className="w-[340px] flex flex-col gap-4">
-        <Card className="flex-1 flex flex-col p-0 h-full min-h-[500px]">
+        <Card className="flex-1 flex flex-col p-0 h-full min-h-[500px] max-h-[800px]">
           <CardHeader className="pb-2 pt-4 px-6 flex-row items-center justify-between">
             <CardTitle className="text-base">History</CardTitle>
-            <span className="text-xs text-gray-400 cursor-pointer">Detail</span>
+            <Link to="/history">
+              <span className="text-sm text-gray-400 hover:text-blue-600 hover:underline cursor-pointer transition-colors duration-200">
+                Details...&gt;&gt;&gt;
+              </span>
+            </Link>
           </CardHeader>
           <CardContent className="pt-0 px-0 pb-4 overflow-y-auto flex-1">
-            <div className="flex flex-col divide-y">
+            <div className="flex flex-col divide-y divide-gray-200">
               {historySubmissions.map((item, idx) => (
                 <div key={`${item.id}-${idx}`} className="flex items-center justify-between px-6 py-3">
                   <div className="flex items-center gap-2">

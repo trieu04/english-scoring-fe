@@ -116,6 +116,7 @@ export function MainAppLayout() {
               to="/dashboard"
               label="dashboard"
               isCollapsed={isCollapsed}
+              activeProps={{ className: "bg-blue-100 text-blue-700" }}
             />
           </nav>
         </div>

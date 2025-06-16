@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,15 +6,47 @@ import Icons from "@/components/icons";
 import { useState } from "react";
 import { DownloadIcon } from "lucide-react";
 
-const mockRows = Array.from({ length: 12 }).map((_, i) => ({
+// const mockRows = Array.from({ length: 12 }).map((_, i) => ({
+//   id: i + 1,
+//   name: "Kì thi ngày 30/4",
+//   scoringSystem: "Aptis",
+//   date: "1/2/2025",
+// }));
+
+const scoringSystems = ["Aptis", "IELTS", "TOEIC", "Cambridge", "Nội bộ"];
+
+const rawData = [
+  { name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
+  { name: "Kip 2, 09/10/2024", time: "12:24", date: "04/12/2024" },
+  { name: "Kì thi nội bộ 13/4", time: "10:23", date: "04/12/2024" },
+  { name: "Thi HSG cấp trường", time: "09:23", date: "04/12/2024" },
+  { name: "Nguyễn Xuân Hoa", time: "08:23", date: "04/12/2024" },
+  { name: "Kip 1", time: "18:23", date: "04/12/2024" },
+  { name: "Thi nội bộ ", time: "22:23", date: "04/12/2024" },
+  { name: "Thi cấp Tỉnh", time: "19:23", date: "04/12/2024" },
+  { name: "Kiểm tra tuần", time: "01:23", date: "04/12/2024" },
+  { name: "Lấy chứng chỉ", time: "00:23", date: "04/12/2024" },
+  { name: "Thi HSG cấp trường", time: "09:23", date: "04/12/2024" },
+  { name: "Nguyễn Xuân Hoa", time: "08:23", date: "04/12/2024" },
+  { name: "Kip 1", time: "18:23", date: "04/12/2024" },
+  { name: "Thi nội bộ ", time: "22:23", date: "04/12/2024" },
+  { name: "Thi cấp Tỉnh", time: "19:23", date: "04/12/2024" },
+  { name: "Kiểm tra tuần", time: "01:23", date: "04/12/2024" },
+  { name: "Lấy chứng chỉ", time: "00:23", date: "04/12/2024" },
+];
+
+const mockRows = rawData.map((item, i) => ({
   id: i + 1,
-  name: "Kì thi ngày 30/4",
-  scoringSystem: "Aptis",
-  date: "1/2/2025",
+  name: item.name,
+  time: item.time,
+  date: item.date,
+  scoringSystem: scoringSystems[Math.floor(Math.random() * scoringSystems.length)],
 }));
 
+
 const PAGE_SIZE = 10;
-const TOTAL_PAGES = 5;
+const TOTAL_PAGES = Math.ceil(mockRows.length / 10);
+
 
 export function HistoryPage() {
   const [search, setSearch] = useState("");
@@ -26,10 +58,13 @@ export function HistoryPage() {
 
   return (
     <div className="p-6 bg-[#f7f9fa] min-h-full">
-      <div className="text-3xl font-bold mb-6">Submission history</div>
-      <Card className="p-6">
+      {/* <div className="text-3xl font-bold mb-6">Submission history</div> */}
+      <Card className="p-6 h-[875px] overflow-auto relative">
+        <CardHeader className="mb-4">
+          <CardTitle className="text-3xl font-semibold">Submission History</CardTitle>
+        </CardHeader>
         {/* Filter/Search Bar */}
-        <div className="flex justify-end items-center mb-4 gap-2">
+        <div className="flex justify-end items-center mb-4 gap-3">
           <div className="relative w-64">
             <Input
               className="pl-10 pr-4 bg-[#f7f9fa] border rounded-full"
@@ -48,28 +83,34 @@ export function HistoryPage() {
           </Button>
         </div>
         {/* Table */}
-        <div className="rounded-xl border overflow-hidden">
+        <div className="rounded-xl border border-gray-200 overflow-hidden">
           <Table className="">
             <TableHeader>
-              <TableRow className="bg-[#3881A2] text-white">
-                <TableHead className="text-white font-semibold text-base">No</TableHead>
-                <TableHead className="text-white font-semibold text-base">Name</TableHead>
-                <TableHead className="text-white font-semibold text-base">Scoring System</TableHead>
-                <TableHead className="text-white font-semibold text-base">Date</TableHead>
-                <TableHead className="text-white font-semibold text-base text-center">Actions</TableHead>
+              <TableRow isHeader className="bg-[#3881A2] text-white">
+                <TableHead className="text-white font-semibold text-base text-center w-[5%]">No</TableHead>
+                <TableHead className="text-white font-semibold text-base w-[35%]">Name</TableHead>
+                <TableHead className="text-white font-semibold text-base text-center w-[20%]">Date</TableHead>
+                <TableHead className="text-white font-semibold text-base text-center w-[20%]">Scoring System</TableHead>
+                <TableHead className="text-white font-semibold text-base text-center w-[20%]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginatedRows.map((row, idx) => (
                 <TableRow key={row.id} className={idx % 2 === 1 ? "bg-[#eaf6fb]" : "bg-white"}>
-                  <TableCell>{row.id}</TableCell>
+                  <TableCell className="text-center">{row.id}</TableCell>
                   <TableCell>{row.name}</TableCell>
-                  <TableCell>{row.scoringSystem}</TableCell>
-                  <TableCell>{row.date}</TableCell>
-                  <TableCell className="flex gap-2 justify-center items-center">
-                    <Button size="icon" variant="ghost" title="Download"><DownloadIcon className="w-5 h-5 text-[#3881A2]" /></Button>
-                    <Button size="icon" variant="ghost" title="Open"><Icons.ShareIcon className="w-5 h-5 text-[#3881A2]" /></Button>
-                    <Button size="icon" variant="ghost" title="Delete"><Icons.XIcon className="w-5 h-5 text-[#E57373]" /></Button>
+                  <TableCell className="text-center">{row.date}</TableCell>
+                  <TableCell className="text-center">{row.scoringSystem}</TableCell>
+                  <TableCell className="flex justify-center gap-2 items-center">
+                    <Button size="icon" variant="ghost" title="Download">
+                      <DownloadIcon className="w-5 h-5 text-[#3881A2]" />
+                    </Button>
+                    <Button size="icon" variant="ghost" title="Open">
+                      <Icons.ShareIcon className="w-5 h-5 text-[#3881A2]" />
+                    </Button>
+                    <Button size="icon" variant="ghost" title="Delete">
+                      <Icons.XIcon className="w-5 h-5 text-[#E57373]" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -77,17 +118,19 @@ export function HistoryPage() {
           </Table>
         </div>
         {/* Pagination */}
-        <div className="flex justify-center items-center gap-2 mt-6">
-          {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
-            <button
-              key={i}
-              className={`w-8 h-8 rounded-full flex items-center justify-center border ${page === i + 1 ? "bg-[#3881A2] text-white" : "bg-white text-[#3881A2]"}`}
-              onClick={() => setPage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-        </div>
+        <div className="absolute bottom-8 right-10 flex justify-end items-center gap-2">
+            {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
+              <button
+                key={i}
+                className={`w-8 h-8 rounded-full flex items-center justify-center border ${
+                  page === i + 1 ? "bg-[#3881A2] text-white" : "bg-white text-[#3881A2]"
+                }`}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
       </Card>
     </div>
   );

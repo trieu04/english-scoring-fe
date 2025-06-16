@@ -50,18 +50,24 @@ function TableFooter({ className, ...props }: React.ComponentProps<"tfoot">) {
   );
 }
 
-function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
+function TableRow({
+  isHeader = false,
+  className,
+  ...props
+}: React.ComponentProps<"tr"> & { isHeader?: boolean }) {
   return (
     <tr
       data-slot="table-row"
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
-        className,
+        !isHeader && "hover:bg-muted/50 data-[state=selected]:bg-muted",
+        "transition-colors",
+        className
       )}
       {...props}
     />
   );
 }
+
 
 function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
