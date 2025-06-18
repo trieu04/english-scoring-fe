@@ -25,7 +25,7 @@ export function MainAppLayout() {
       {/* Sidebar */}
       <aside
         className={clsx(
-          "bg-white shadow-md p-4 flex flex-col justify-between transition-all duration-300",
+          "fixed top-0 left-0 h-screen bg-white shadow-md p-4 flex flex-col justify-between transition-all duration-300",
           {
             "w-20": isCollapsed,
             "w-64": !isCollapsed,
@@ -148,8 +148,20 @@ export function MainAppLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1">
-        <header className="flex items-center justify-between h-[var(--header-height)] mx-4">
+      <main className={clsx(
+          "fixed top-[var(--header-height)] bottom-0 right-0 overflow-hidden transition-all duration-300",
+          {
+            "left-20": isCollapsed,
+            "left-64": !isCollapsed,
+          }
+        )}>
+        <header   className={clsx(
+            "fixed top-0 right-0 z-40 h-[var(--header-height)] px-4 bg-white shadow flex items-center justify-between transition-all duration-300",
+            {
+              "left-20": isCollapsed,
+              "left-64": !isCollapsed,
+            }
+          )}>
           <div className="">
             <Logos.HeaderLogo />
           </div>
@@ -159,7 +171,7 @@ export function MainAppLayout() {
           </div>
         </header>
 
-        <div className="h-[calc(100vh-var(--header-height))]">
+        <div className="h-full overflow-auto px-4 py-4">
           <Outlet />
         </div>
       </main>

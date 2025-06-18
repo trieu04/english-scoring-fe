@@ -70,7 +70,7 @@ export function DashboardPage() {
   return (
     <div className="flex gap-6 h-full p-6 bg-[#f7f9fa]">
       {/* Main content */}
-      <div className="flex-1 flex flex-col gap-6">
+      <Card className="flex-1 flex flex-col gap-6 bg-dscl-line border-none shadow-none p-0 overflow-auto max-h-[800px]">
         {/* Top: Submissions */}
         <Card className="bg-[#3881A2] text-white flex-row items-center p-6 h-32">
           <div className="flex items-center h-full">
@@ -192,7 +192,7 @@ export function DashboardPage() {
           </button>
         </CardFooter>
       </Card>
-      </div>
+      </Card>
       {/* Right: History */}
       <div className="w-[340px] flex flex-col gap-4">
         <Card className="flex-1 flex flex-col p-0 h-full min-h-[500px] max-h-[800px]">

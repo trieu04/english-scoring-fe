@@ -9,28 +9,57 @@ import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
 export function UploadPage() {
+  const [activeKey, setActiveKey] = useState("file");
+
+  const items = [
+    {
+      label: (
+        <span
+          className={`min-w-[160px] inline-block text-center pb-2 border-b-2 transition ${
+            activeKey === "file"
+              ? "text-[#3881A2] border-[#3881A2]"
+              : "text-gray-600 border-transparent"
+          }`}
+        >
+          File Scoring
+        </span>
+      ),
+      key: "file",
+      children: <FileScoring />,
+    },
+    {
+      label: (
+        <span
+          className={`min-w-[160px] inline-block text-center pb-2 border-b-2 transition ${
+            activeKey === "batch"
+              ? "text-[#3881A2] border-[#3881A2]"
+              : "text-gray-600 border-transparent"
+          }`}
+        >
+          Batch Scoring
+        </span>
+      ),
+      key: "batch",
+      children: <BatchScoring />,
+    },
+  ];
+  
+
   return (
     <div className="h-full px-4">
       <div className="bg-white p-4 rounded-xl h-full">
         <Tabs
           type="card"
-          items={[
-            {
-              label: "File Scoring",
-              key: "file",
-              children: FileScoring(),
-            },
-            {
-              label: "Batch Scoring",
-              key: "batch",
-              children: BatchScoring(),
-            },
-          ]}
+          activeKey={activeKey}
+          onChange={setActiveKey}
+          items={items}
+          className="custom-tabs"
         />
       </div>
     </div>
   );
 }
+
 
 interface ITask {
   no: number;
@@ -250,9 +279,7 @@ function FileScoring() {
 
             navigate({
               to: "/scoring",
-              search: {
-                examSession: 123,
-              },
+              search: { examSession: "123" }, // hoặc String(123)
             });
           }}
         >
