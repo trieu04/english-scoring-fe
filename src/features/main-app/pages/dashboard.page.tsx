@@ -153,7 +153,7 @@ export function DashboardPage() {
             <span className="text-xs text-gray-400 cursor-pointer">Detail</span>
           </CardHeader>
           <CardContent className="pt-0 px-0 pb-4 overflow-y-auto flex-1">
-            <div className="flex flex-col divide-y">
+            <div className="flex flex-col ">
               {historySubmissions.map((item, idx) => (
                 <div key={`${item.id}-${idx}`} className="flex items-center justify-between px-6 py-3">
                   <div className="flex items-center gap-2">

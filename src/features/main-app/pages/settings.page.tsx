@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Pane } from "@/components/ui/pane";
 import { MicIcon, PencilIcon, PlusIcon } from "lucide-react";
 
 const scoringSystems = [
@@ -45,8 +46,7 @@ const tasks = [
 
 export function SettingsPage() {
   return (
-    <div className="p-8 bg-[#f7f9fa] min-h-full relative">
-      <div className="text-3xl font-bold mb-8">Scoring system</div>
+    <Pane header="Scoring systems">
       <div className="flex flex-col gap-8">
         {scoringSystems.map((sys, i) => (
           <div key={sys.key} className={`border-2 rounded-2xl p-4 ${i === 0 ? "border-[#3ec6f2] bg-[#f7fdff]" : "border-[#6c7cf3] bg-[#f7f9fa]"}`}>
@@ -54,7 +54,7 @@ export function SettingsPage() {
               <span className={`px-4 py-1 rounded-lg text-base font-semibold ${sys.color}`}>{sys.label}</span>
             </div>
             <div className="flex flex-col gap-6">
-              {sys.rows.map((row, idx) => (
+              {sys.rows.map((row, _idx) => (
                 <div key={row.label} className="flex items-center gap-4 bg-white rounded-xl p-6 shadow-sm border border-transparent">
                   <div className="flex items-center gap-2 min-w-[120px]">
                     <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-[#f7f9fa] border border-[#eaf6fb]">
@@ -84,6 +84,6 @@ export function SettingsPage() {
           New Scoring system
         </Button>
       </div>
-    </div>
+    </Pane>
   );
 }

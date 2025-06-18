@@ -6,6 +6,7 @@ import { getSpeakingScoringData, getSpeakingSubmissionData, getSpeakingVersionin
 import { OverallPoint } from "./overall-point";
 import { SkillPoint } from "./skill-point";
 import { AudioPlayer } from "./audio-player";
+import { setFullHeightFromTop } from "@/lib/utils";
 
 interface IComponentProps {
   examId: number | null;
@@ -66,12 +67,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
       <h2 className="px-4 pt-4 pb-2 border-b-2 border-b-gray-200">Speaking</h2>
       <div
         className="overflow-auto px-4 mt-2"
-        ref={(el) => {
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            el.style.height = `calc(100vh - ${rect.top}px)`;
-          }
-        }}
+        ref={setFullHeightFromTop}
       >
         {statusContent || (
           <>

@@ -29,6 +29,26 @@
 
 @theme {
   /* Design */
+  --color-main: #3881A2;
+  --color-second: #EDF6F9;
+  --color-grey10: #F8F8F8;
+  --color-line: #F3F3F3;
+
+  --color-vstep: #44C4DB;
+  --color-ielts: #EE756E;
+  --color-aptis: #52B66B;
+  --color-other: #7096EE;
+
+  --color-t1bg: #E8F8FF;
+  --color-t1: #32ADE6;
+  --color-t2bg: #FFF5F7;
+  --color-t2: #FF2D55;
+  --color-t3bg: #FFF8EE;
+  --color-t3: #FF9500;
+  --color-t4bg: #FBF2FF;
+  --color-t4: #AF52DE;
+  
+/* 
   --color-dscl-back: #1d2325;
   --color-dscl-blue1: #edf6f9;
   --color-dscl-blue2: #ffffff;
@@ -38,7 +58,7 @@
   --color-dscl-line: #f9f9f9;
   --color-dscl-main: #3881a2;
   --color-dscl-second: #fff7e7;
-  --color-dscl-white: #ffffff;
+  --color-dscl-white: #ffffff; */
 
   --font-sans: "Helvetica", sans-serif;
 

@@ -7,6 +7,7 @@ import Icons from "@/components/icons";
 import { getExamListData } from "../apis/exams.api";
 import { WritingComponent } from "../components/writing";
 import { SpeakingComponent } from "../components/speaking";
+import { setFullHeightFromTop } from "@/lib/utils";
 
 export function ScoringPage() {
   const [examId, setExamId] = useState<number | null>(null);
@@ -42,12 +43,7 @@ export function ScoringPage() {
             <h2 className="px-4 pt-4 pb-2 border-b-2 border-b-gray-200">List of Test</h2>
             <div
               className="overflow-auto px-4"
-              ref={(el) => {
-                if (el) {
-                  const rect = el.getBoundingClientRect();
-                  el.style.height = `calc(100vh - ${rect.top}px)`;
-                }
-              }}
+              ref={setFullHeightFromTop}
             >
               {examListQuery.isLoading && <Spin className="w-full" size="small" />}
               {examListQuery.isSuccess
