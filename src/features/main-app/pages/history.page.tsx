@@ -1,39 +1,77 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { DownloadIcon, ExternalLink, Trash2Icon, UploadIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Pane } from "@/components/ui/pane";
-
-const mockRows = Array.from({ length: 12 }).map((_, i) => ({
-  id: i + 1,
-  name: "Kì thi ngày 30/4",
-  scoringSystem: "Aptis",
-  date: "1/2/2025",
-}));
-
-const PAGE_SIZE = 10;
-const TOTAL_PAGES = 5;
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useQuery } from "@tanstack/react-query";
+import { notification } from "antd";
+import { clsx } from "clsx";
+import { DownloadIcon, ExternalLink, Trash2Icon, UploadIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { listExamSessionApi } from "../apis/exams.api";
 
 export function HistoryPage() {
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
+  const [tableState, setTableState] = useState({
+    itemsPerPage: 10,
+    page: 1,
+    search: "",
+    searchInput: "",
+  });
 
-  // Filtered and paginated data (mocked)
-  const filteredRows = mockRows.filter(row => row.name.toLowerCase().includes(search.toLowerCase()));
-  const paginatedRows = filteredRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const listExamSessionQuery = useQuery({
+    queryKey: ["scoringSessions", tableState.itemsPerPage, tableState.page, tableState.search],
+    queryFn: () => listExamSessionApi(tableState),
+    staleTime: 1000 * 60 * 5,
+    refetchOnWindowFocus: false,
+  });
+
+  const tableData = useMemo(() => {
+    const blankTableData = {
+      rows: [],
+      count: 0,
+      total: 0,
+      page: 1,
+      pageCount: 0,
+    };
+
+    const { isError, isSuccess, error, data } = listExamSessionQuery;
+    if (isError) {
+      notification.error({
+        message: "Failed to load submission history",
+        description: error.message,
+        placement: "topRight",
+      });
+    }
+
+    if (isSuccess) {
+      const { data: rows, count, total, page, pageCount } = data;
+
+      return {
+        rows,
+        count,
+        total,
+        page,
+        pageCount,
+      };
+    }
+
+    return blankTableData;
+  }, [listExamSessionQuery]);
 
   return (
-    <Pane header="Submission history">
-      <div className="text-3xl font-bold mb-6"></div>
+    <Pane header="Submission history" isLoading={listExamSessionQuery.isLoading}>
       {/* Filter/Search Bar */}
       <div className="flex justify-end items-center mb-4 gap-2">
         <div className="relative w-64">
           <Input
             className="pl-10 pr-4 bg-[#f7f9fa] border rounded-full"
             placeholder="Search"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
+            value={tableState.searchInput}
+            onChange={(e) => { setTableState(p => ({ ...p, searchInput: e.target.value })); }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setTableState(p => ({ ...p, page: 1, search: p.searchInput }));
+              }
+            }}
           />
           <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.6 10.6z" /></svg>
@@ -58,12 +96,12 @@ export function HistoryPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedRows.map((row, idx) => (
+            {tableData?.rows.map((row, idx) => (
               <TableRow key={row.id} className={idx % 2 === 1 ? "bg-[#eaf6fb]" : "bg-white"}>
                 <TableCell className="text-center">{row.id}</TableCell>
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.scoringSystem}</TableCell>
-                <TableCell>{row.date}</TableCell>
+                <TableCell>{row.createdAt}</TableCell>
                 <TableCell className="flex justify-center items-center">
                   <Button size="icon" variant="ghost" title="Download"><DownloadIcon className="w-5 h-5" /></Button>
                   <Button size="icon" variant="ghost" title="Upload"><UploadIcon className="w-5 h-5 " /></Button>
@@ -77,11 +115,14 @@ export function HistoryPage() {
       </div>
       {/* Pagination */}
       <div className="flex justify-center items-center gap-2 mt-6">
-        {Array.from({ length: TOTAL_PAGES }).map((_, i) => (
+        {Array.from({ length: tableData?.pageCount }).map((_, i) => (
           <Button
             key={i}
-            className={`w-8 h-8 rounded-full flex items-center justify-center border ${page === i + 1 ? "bg-[#3881A2] text-white" : "bg-white text-[#3881A2]"}`}
-            onClick={() => setPage(i + 1)}
+            className={clsx(
+              "w-8 h-8 rounded-full flex items-center justify-center border",
+              tableState.page === i + 1 ? "bg-[#3881A2] text-white" : "bg-white text-[#3881A2]",
+            )}
+            onClick={() => setTableState(p => ({ ...p, page: i + 1 }))}
           >
             {i + 1}
           </Button>

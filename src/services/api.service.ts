@@ -52,9 +52,7 @@ axiosInstance.interceptors.response.use(
 );
 
 export class ApiService {
-  protected axiosInstance: AxiosInstance = axiosInstance;
-
-  constructor() {}
+  constructor(protected axiosInstance: AxiosInstance) {}
 
   async get<T = unknown>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return this.extractDataFromResponse(this.axiosInstance.get<T>(url, config));
@@ -82,4 +80,4 @@ export class ApiService {
   }
 }
 
-export const apiService = new ApiService();
+export const apiService = new ApiService(axiosInstance);

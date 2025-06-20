@@ -51,11 +51,4 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export class MockApiService extends ApiService {
-  constructor() {
-    super();
-    this.axiosInstance = axiosInstance;
-  }
-}
-
-export const mockApiService = new MockApiService();
+export const mockApiService = new ApiService(axiosInstance);

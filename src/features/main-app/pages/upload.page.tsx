@@ -7,12 +7,14 @@ import clsx from "clsx";
 import { TrashIcon, UploadIcon } from "lucide-react";
 import { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
+import { setFullHeightFromTop } from "@/lib/utils";
 
 export function UploadPage() {
   return (
     <div className="h-full px-4">
       <div className="bg-white p-4 rounded-xl h-full">
         <Tabs
+          className=""
           type="card"
           items={[
             {
@@ -219,12 +221,7 @@ function FileScoring() {
   return (
     <div
       className="overflow-auto"
-      ref={(el) => {
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          el.style.height = `calc(100vh - ${rect.top}px)`;
-        }
-      }}
+      ref={setFullHeightFromTop}
     >
       <div
         className="flex flex-col md:flex-row gap-16 p-6 "

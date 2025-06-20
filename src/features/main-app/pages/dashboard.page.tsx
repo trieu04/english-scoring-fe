@@ -1,6 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, DatePicker } from "antd";
-import { BarChart } from "@mui/x-charts/BarChart";
 import { useState } from "react";
 import Icons from "@/components/icons";
 import Illustrations from "@/components/illustrations";
@@ -87,13 +86,13 @@ export function DashboardPage() {
               <CardTitle className="text-base">Scoring distribution all submissions</CardTitle>
             </CardHeader>
             <CardContent className="pt-0 pb-4">
-              <BarChart
+              {/* <BarChart
                 xAxis={[{ data: barChartData.scores, label: "Score" }]}
                 series={[{ data: barChartData.frequencies, label: "Frequency" }]}
                 height={220}
                 colors={["#3881A2"]}
                 grid={{ horizontal: true }}
-              />
+              /> */}
             </CardContent>
           </Card>
         </div>

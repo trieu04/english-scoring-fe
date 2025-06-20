@@ -2,9 +2,6 @@ import { useState } from "react";
 import Illustrations from "@/components/illustrations";
 import { useQuery } from "@tanstack/react-query";
 import { Spin } from "antd";
-import clsx from "clsx";
-import Icons from "@/components/icons";
-import { getExamListData } from "../apis/exams.api";
 import { WritingComponent } from "../components/writing";
 import { SpeakingComponent } from "../components/speaking";
 import { setFullHeightFromTop } from "@/lib/utils";
@@ -18,7 +15,7 @@ export function ScoringPage() {
 
   const examListQuery = useQuery({
     queryKey: ["exam-list", examSessionId],
-    queryFn: () => getExamListData(Number(examSessionId)),
+    queryFn: () => {},
     enabled: !!examSessionId,
     staleTime: 0,
   });
@@ -49,7 +46,7 @@ export function ScoringPage() {
               {examListQuery.isSuccess
                 && (
                   <div className="flex flex-col space-y-2 py-6 max-h-[calc(var(--navbar-height)*0.6)] overflow-y-auto">
-                    {
+                    {/* {
                       examListQuery.data.map(item => (
                         <div key={item.id} className={clsx("p-2 rounded-sm", item.id === examId && "bg-dscl-blue1")}>
                           <div
@@ -63,7 +60,7 @@ export function ScoringPage() {
                           </div>
                         </div>
                       ))
-                    }
+                    } */}
                   </div>
                 )}
             </div>

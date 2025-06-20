@@ -52,7 +52,7 @@ const scoringRoute = createRoute({
   component: ScoringPage,
   validateSearch: (search) => {
     return {
-      exam: search.exam ?? undefined,
+      examSession: search.examSession ?? undefined,
     };
   },
 });
@@ -67,6 +67,11 @@ const uploadRoute = createRoute({
   getParentRoute: () => mainAppRoute,
   path: "upload",
   component: UploadPage,
+  validateSearch: (search) => {
+    return {
+      scoringSystem: search.scoringSystem ?? undefined,
+    };
+  },
 });
 
 export const mainAppRouteTree = mainAppRoute.addChildren([

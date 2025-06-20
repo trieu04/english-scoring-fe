@@ -60,28 +60,31 @@ export function MainAppLayout() {
       icon: <Icons.PenWorkspaceIcon />,
       to: "/scoring",
       search: { exam: undefined },
-      onClick: () => setScoringOpen(o => !o),
+      onClick: (e: any) => {
+        setScoringOpen(o => !o);
+        e.preventDefault(); // Prevent default link behavior
+      },
       children: scoringOpen
         ? [
             {
               label: "VSTEP",
               icon: <BookOpenIcon size={18} />,
-              to: "/scoring",
-              search: { exam: "vstep" },
+              to: "/upload",
+              search: { scoringSystem: "vstep" },
               nested: true,
             },
             {
               label: "IELTS",
               icon: <Icons.IeltsIcon className="size-5" />,
-              to: "/scoring",
-              search: { exam: "ielts" },
+              to: "/upload",
+              search: { scoringSystem: "ielts" },
               nested: true,
             },
             {
               label: "Custom 1",
               icon: <FileTextIcon size={18} />,
-              to: "/scoring",
-              search: { exam: "custom-1" },
+              to: "/upload",
+              search: { scoringSystem: "custom-1" },
               nested: true,
             },
           ]
