@@ -22,6 +22,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             token: {
               fontFamily: "Helvetica, sans-serif",
               fontSize: 16,
+              colorPrimary: "#3881A2",
             },
           }}
         >

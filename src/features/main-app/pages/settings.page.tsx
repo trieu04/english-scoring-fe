@@ -46,7 +46,7 @@ const tasks = [
 
 export function SettingsPage() {
   return (
-    <Pane header="Scoring systems">
+    <Pane title="Scoring systems">
       <div className="flex flex-col gap-8">
         {scoringSystems.map((sys, i) => (
           <div key={sys.key} className={`border-2 rounded-2xl p-4 ${i === 0 ? "border-[#3ec6f2] bg-[#f7fdff]" : "border-[#6c7cf3] bg-[#f7f9fa]"}`}>

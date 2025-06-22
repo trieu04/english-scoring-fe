@@ -13,7 +13,7 @@ import {
   SidebarIcon,
   UserIcon,
 } from "lucide-react";
-import { createContext, use, useState } from "react";
+import { createContext, use, useMemo, useState } from "react";
 import { HeaderComponent } from "./components/header";
 
 /**
@@ -59,12 +59,14 @@ export function MainAppLayout() {
       label: "Scoring",
       icon: <Icons.PenWorkspaceIcon />,
       to: "/scoring",
-      search: { exam: undefined },
       onClick: (e: any) => {
         setScoringOpen(o => !o);
+        if (collapsed) {
+          setCollapsed(false); // Expand sidebar when opening scoring
+        }
         e.preventDefault(); // Prevent default link behavior
       },
-      children: scoringOpen
+      children: scoringOpen && !collapsed
         ? [
             {
               label: "VSTEP",
@@ -131,8 +133,10 @@ export function MainAppLayout() {
     },
   ];
 
+  const sidebarContextValue = useMemo(() => ({ collapsed }), [collapsed]);
+
   return (
-    <SidebarContext value={{ collapsed }}>
+    <SidebarContext value={sidebarContextValue}>
       <div className="flex h-screen bg-line">
         <Sidebar
           items={navItems}
@@ -216,12 +220,12 @@ function NavigationItem(item: NavItem) {
   } = item;
 
   const linkClass = clsx(
-    "flex items-center w-full space-x-3 p-3 rounded-full no-underline transition-none text-gray-800",
+    "flex items-center w-full space-x-3 p-3 my-1 rounded-full no-underline text-gray-800 h-12 hover:bg-grey10",
     small && "text-sm text-gray-600",
   );
 
   const activeProps = {
-    className: clsx(!nested ? "bg-main text-white" : "bg-second"),
+    className: clsx(!nested ? "bg-main hover:bg-main text-white" : "bg-second"),
   };
 
   return (

@@ -1,9 +1,8 @@
+import "@ant-design/v5-patch-for-react-19";
 import { lazy, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { ConfigurationError } from "./components/error/configuration-error";
-import "./css/tailwind.css";
 import "./css/index.css";
-import "@ant-design/v5-patch-for-react-19";
 
 const root = createRoot(document.getElementById("root")!);
 
