@@ -9,6 +9,7 @@ import { ReportPage } from "@/features/main-app/pages/report.page";
 import { ScoringPage } from "@/features/main-app/pages/scoring.page";
 import { SettingsPage } from "@/features/main-app/pages/settings.page";
 import { UploadPage } from "@/features/main-app/pages/upload.page";
+import { NewScoringSystemPage } from "./pages/new-scoring-system";
 
 const mainAppRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -63,6 +64,12 @@ const settingsRoute = createRoute({
   component: SettingsPage,
 });
 
+const newScoringSystemRoute = createRoute({
+  getParentRoute: () => mainAppRoute,
+  path: "settings/new-scoring-system",
+  component: NewScoringSystemPage,
+});
+
 const uploadRoute = createRoute({
   getParentRoute: () => mainAppRoute,
   path: "upload",
@@ -83,4 +90,5 @@ export const mainAppRouteTree = mainAppRoute.addChildren([
   informationRoute,
   reportRoute,
   settingsRoute,
+  newScoringSystemRoute,
 ]);

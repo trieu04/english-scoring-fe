@@ -58,7 +58,7 @@ export function HistoryPage() {
   });
 
   const listScoringSystemQuery = useQuery({
-    queryKey: ["listExamSystem"],
+    queryKey: ["listScoringSystem"],
     queryFn: () => {
       return apiService.get<IPagination<ScoringSystem>>("/scoring-systems", {
         params: {
