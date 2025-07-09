@@ -1,5 +1,8 @@
 import Icons from "@/components/icons";
+import { apiService } from "@/services/api.service";
+import { useQuery } from "@tanstack/react-query";
 import { Link, LinkComponentProps, Outlet } from "@tanstack/react-router";
+import { Spin } from "antd";
 import clsx from "clsx";
 import {
   BarChart2Icon,
@@ -38,6 +41,8 @@ interface NavItemBase extends Omit<LinkComponentProps, "children"> {
    * Children are rendered as nested links underneath this item.
    */
   children?: NavItem[];
+  isChildrenLoading?: boolean;
+  isChildrenOpen?: boolean;
 }
 
 type NavItem = NavItemBase & Required<Pick<NavItemBase, "icon" | "label">>;
@@ -48,6 +53,12 @@ type NavItem = NavItemBase & Required<Pick<NavItemBase, "icon" | "label">>;
 export function MainAppLayout() {
   const [collapsed, setCollapsed] = useState(false);
   const [scoringOpen, setScoringOpen] = useState(true);
+  const getScoringSystemsQuery = useQuery({
+    queryKey: ["/scoring-system"],
+    queryFn: () => {
+      return apiService.get<any[]>("/scoring-system");
+    },
+  });
 
   const toggleCollapse = () => setCollapsed(p => !p);
 
@@ -58,7 +69,7 @@ export function MainAppLayout() {
     {
       label: "Scoring",
       icon: <Icons.PenWorkspaceIcon />,
-      to: "/scoring",
+      to: "/upload",
       onClick: (e: any) => {
         setScoringOpen(o => !o);
         if (collapsed) {
@@ -66,31 +77,26 @@ export function MainAppLayout() {
         }
         e.preventDefault(); // Prevent default link behavior
       },
-      children: scoringOpen && !collapsed
-        ? [
-            {
-              label: "VSTEP",
-              icon: <BookOpenIcon size={18} />,
-              to: "/upload",
-              search: { scoringSystem: "vstep" },
-              nested: true,
-            },
-            {
-              label: "IELTS",
-              icon: <Icons.IeltsIcon className="size-5" />,
-              to: "/upload",
-              search: { scoringSystem: "ielts" },
-              nested: true,
-            },
-            {
-              label: "Custom 1",
-              icon: <FileTextIcon size={18} />,
-              to: "/upload",
-              search: { scoringSystem: "custom-1" },
-              nested: true,
-            },
-          ]
-        : [],
+      children: getScoringSystemsQuery.data?.map(scoringSystem => ({
+        label: scoringSystem.name,
+        icon: (() => {
+          switch (scoringSystem.name.toLowerCase()) {
+            case "ielts":
+              return <Icons.IeltsIcon />;
+            case "vstep":
+              return <BookOpenIcon size={20} />;
+            default:
+              return <FileTextIcon size={20} />;
+          }
+        })(),
+        to: `/upload`,
+        search: {
+          scoringSystem: scoringSystem.id,
+        },
+        nested: true,
+      }) as NavItem),
+      isChildrenOpen: scoringOpen,
+      isChildrenLoading: getScoringSystemsQuery.isLoading,
       after: (
         <span className="ml-auto">
           {scoringOpen ? <ChevronDownIcon size={16} /> : <ChevronUpIcon size={16} />}
@@ -216,6 +222,8 @@ function NavigationItem(item: NavItem) {
     children,
     after,
     nested,
+    isChildrenOpen,
+    isChildrenLoading,
     ...linkProps
   } = item;
 
@@ -236,12 +244,22 @@ function NavigationItem(item: NavItem) {
         {!collapsed && after}
       </Link>
 
-      {!!children?.length
-        && (
-          <div className="ml-8 mt-1 space-y-1">
-            {children.map(child => <NavigationItem key={child.label} {...child} />)}
-          </div>
-        )}
+      {!collapsed && isChildrenOpen && (
+        <>
+          {isChildrenLoading && (
+            <div className="w-full flex justify-center mt-2">
+              <Spin />
+            </div>
+          )}
+
+          {!!children?.length
+            && (
+              <div className="ml-8 mt-1 space-y-1">
+                {children.map(child => <NavigationItem key={child.label} {...child} />)}
+              </div>
+            )}
+        </>
+      )}
     </>
   );
 }

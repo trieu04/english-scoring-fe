@@ -53,7 +53,8 @@ const scoringRoute = createRoute({
   component: ScoringPage,
   validateSearch: (search) => {
     return {
-      examSession: search.examSession ?? undefined,
+      examSessionId: search.examSessionId ?? undefined,
+      examId: search.exam ?? undefined,
     };
   },
 });
