@@ -20,6 +20,7 @@ export default antfu({
     overrides: {
       "react-refresh/only-export-components": "off",
       "react/no-array-index-key": "off",
+      "no-alert": "off",
     },
   },
   javascript: true,

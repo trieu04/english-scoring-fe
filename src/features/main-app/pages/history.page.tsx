@@ -2,13 +2,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pane } from "@/components/ui/pane";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { apiService } from "@/services/api.service";
+import { PaginatedResult } from "@/types/interfaces/pagination";
 import { useQuery } from "@tanstack/react-query";
-import {Checkbox, notification, Popover } from "antd";
+import { Checkbox, notification, Popover } from "antd";
 import { clsx } from "clsx";
 import { DownloadIcon, ExternalLink, Trash2Icon, UploadIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { apiService } from "@/services/api.service";
-import { IPagination } from "@/types/interfaces/pagination";
 
 interface ScoringSystem {
   id: string;
@@ -18,12 +18,13 @@ interface ScoringSystem {
 
 interface ExamSession {
   id: string;
+  no: number;
   createdAt: string;
   updatedAt: string;
   userId: string | null;
   name: string;
   description: string;
-  scoringSystem: string;
+  scoringSystemName: string;
 }
 
 export function HistoryPage() {
@@ -37,44 +38,35 @@ export function HistoryPage() {
   const [tableInput, setTableInput] = useState({
     search: "",
     scoringSystemFilter: [] as string[],
-  })
+  });
 
   const listExamSessionQuery = useQuery({
-    queryKey: ["scoringSessions", tableState],
+    queryKey: ["/exam-session", tableState],
     queryFn: () => {
-      return apiService.get<IPagination<ExamSession>>(`/exam-sessions`, {
+      return apiService.get<PaginatedResult<ExamSession>>(`/exam-session`, {
         params: {
           limit: tableState.itemsPerPage,
           page: tableState.page,
-          s: JSON.stringify({
-            $or: [
-              { name: { $cont: tableState.search } },
-              { description: { $cont: tableState.search } },
-            ],
-          }),
+          search: tableState.search,
+          scoringSystemFilter: tableState.scoringSystemFilter,
         },
       });
     },
   });
 
   const listScoringSystemQuery = useQuery({
-    queryKey: ["listScoringSystem"],
+    queryKey: ["/scoring-system"],
     queryFn: () => {
-      return apiService.get<IPagination<ScoringSystem>>("/scoring-systems", {
-        params: {
-          limit: 1000,
-        },
-      });
+      return apiService.get<ScoringSystem[]>("/scoring-system");
     },
   });
 
   const tableData = useMemo(() => {
     const blankTableData = {
       rows: [],
-      count: 0,
-      total: 0,
-      page: 1,
-      pageCount: 0,
+      currentPage: 1,
+      totalItems: 0,
+      totalPages: 1,
     };
 
     const { isError, isSuccess, error, data } = listExamSessionQuery;
@@ -86,14 +78,13 @@ export function HistoryPage() {
     }
 
     if (isSuccess) {
-      const { data: rows, count, total, page, pageCount } = data;
+      const { data: rows, meta: { currentPage, totalItems, totalPages } } = data;
 
       return {
         rows,
-        count,
-        total,
-        page,
-        pageCount,
+        currentPage,
+        totalItems,
+        totalPages,
       };
     }
 
@@ -111,11 +102,29 @@ export function HistoryPage() {
       return blankData;
     }
     if (isSuccess) {
-      const { data: rows } = data;
-      return rows;
+      return data;
     }
     return blankData;
   }, [listScoringSystemQuery]);
+
+  const deleteExamSession = async (examSessionId: string) => {
+    try {
+      await apiService.delete(`/exam-session/delete`, {
+        params: { id: examSessionId },
+      });
+      notification.success({
+        message: "Submission deleted successfully",
+      });
+      // Refetch the exam sessions after deletion
+      listExamSessionQuery.refetch();
+    }
+    catch (error) {
+      notification.error({
+        message: "Failed to delete submission",
+        description: error instanceof Error ? error.message : "An unexpected error occurred",
+      });
+    }
+  };
 
   const isLoading = listExamSessionQuery.isLoading || listScoringSystemQuery.isLoading;
 
@@ -140,32 +149,35 @@ export function HistoryPage() {
           </span>
         </div>
         <Popover
-          placement="bottomRight" arrow={false} trigger="click"
+          placement="bottomRight"
+          arrow={false}
+          trigger="click"
           title="Scoring System"
-          content={<div className="flex flex-col items-start">
-            {listScoringSystemData.map((item) => (
-              <Checkbox
-                className=""
-                checked={tableInput.scoringSystemFilter.includes(item.id)}
-                onChange={(e) => {
-                  const newFilter = e.target.checked
-                    ? [...tableInput.scoringSystemFilter, item.id]
-                    : tableInput.scoringSystemFilter.filter(v => v !== item.id);
-                  setTableInput(p => ({ ...p, scoringSystemFilter: newFilter }));
-                }}
-                key={item.id}
-              >
-                {item.name}
-              </Checkbox>
-            ))
-            }
-            <div className="mt-2">
-              <Button onClick={() => { setTableState(p => ({ ...p, scoringSystemFilter: tableInput.scoringSystemFilter })); }}>
-                <span className="text-sm">Apply</span>
-              </Button>
-            </div>
+          content={(
+            <div className="flex flex-col items-start">
+              {listScoringSystemData.map(item => (
+                <Checkbox
+                  className=""
+                  checked={tableInput.scoringSystemFilter.includes(item.id)}
+                  onChange={(e) => {
+                    const newFilter = e.target.checked
+                      ? [...tableInput.scoringSystemFilter, item.id]
+                      : tableInput.scoringSystemFilter.filter(v => v !== item.id);
+                    setTableInput(p => ({ ...p, scoringSystemFilter: newFilter }));
+                  }}
+                  key={item.id}
+                >
+                  {item.name}
+                </Checkbox>
+              ))}
+              <div className="mt-2">
+                <Button onClick={() => { setTableState(p => ({ ...p, scoringSystemFilter: tableInput.scoringSystemFilter })); }}>
+                  <span className="text-sm">Apply</span>
+                </Button>
+              </div>
 
-          </div>}
+            </div>
+          )}
         >
           <div className="rounded-full flex items-center gap-2 px-4 py-2 h-9 bg-gray-100 border-input border shadow-xs cursor-pointer">
             <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 6h18M7 12h10M11 18h6" /></svg>
@@ -173,9 +185,9 @@ export function HistoryPage() {
             <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" /></svg>
           </div>
         </Popover>
-      </div >
+      </div>
       {/* Table */}
-      < div className="rounded-xl border-1 border-gray-300 overflow-hidden" >
+      <div className="rounded-xl border-1 border-gray-300 overflow-hidden">
         <Table className="">
           <TableHeader>
             <TableRow>
@@ -189,15 +201,26 @@ export function HistoryPage() {
           <TableBody>
             {tableData?.rows.map((row, idx) => (
               <TableRow key={row.id} className={idx % 2 === 1 ? "bg-[#eaf6fb]" : "bg-white"}>
-                <TableCell className="text-center">{row.id}</TableCell>
+                <TableCell className="text-center">{row.no}</TableCell>
                 <TableCell>{row.name}</TableCell>
-                <TableCell>{row.scoringSystem}</TableCell>
+                <TableCell>{row.scoringSystemName}</TableCell>
                 <TableCell>{row.createdAt}</TableCell>
                 <TableCell className="flex justify-center items-center">
                   <Button size="icon" variant="ghost" title="Download"><DownloadIcon className="w-5 h-5" /></Button>
                   <Button size="icon" variant="ghost" title="Upload"><UploadIcon className="w-5 h-5 " /></Button>
                   <Button size="icon" variant="ghost" title="Open"><ExternalLink className="w-5 h-5 " /></Button>
-                  <Button size="icon" variant="ghost" title="Delete"><Trash2Icon className="w-5 h-5 text-red-500" /></Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    title="Delete"
+                    onClick={() => {
+                      if (window.confirm("Are you sure you want to delete this submission?")) {
+                        deleteExamSession(row.id);
+                      }
+                    }}
+                  >
+                    <Trash2Icon className="w-5 h-5 text-red-500" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -210,11 +233,11 @@ export function HistoryPage() {
             )}
           </TableBody>
         </Table>
-      </div >
+      </div>
       {/* Pagination */}
-      < div className="flex justify-center items-center gap-2 mt-6" >
+      <div className="flex justify-center items-center gap-2 mt-6">
         {
-          Array.from({ length: tableData?.pageCount }).map((_, i) => (
+          Array.from({ length: tableData?.totalPages }).map((_, i) => (
             <Button
               key={i}
               className={clsx(
@@ -227,7 +250,7 @@ export function HistoryPage() {
             </Button>
           ))
         }
-      </div >
-    </Pane >
+      </div>
+    </Pane>
   );
 }
