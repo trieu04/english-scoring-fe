@@ -63,7 +63,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
   }
 
   return (
-    <div className="">
+    <div className="bg-white rounded-lg">
       <h2 className="px-4 pt-4 pb-2 border-b-2 border-b-gray-200">Speaking</h2>
       <div
         className="overflow-auto px-4 mt-2"
