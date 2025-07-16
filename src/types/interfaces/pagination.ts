@@ -1,13 +1,20 @@
-export interface IPaginationState {
-  itemsPerPage: number;
+export interface PaginationQueryDto {
   page: number;
-  search?: string;
+  limit: number;
 }
 
-export interface IPagination<T> {
+export interface PaginationWithSearchQueryDto extends PaginationQueryDto {
+  search: string;
+}
+
+export interface PaginatedMeta {
+  currentPage: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+}
+
+export interface PaginatedResult<T> {
   data: T[];
-  count: number;
-  total: number;
-  page: number;
-  pageCount: number;
+  meta: PaginatedMeta;
 }

@@ -5,8 +5,16 @@ export function SkillPoint({
 }: {
   icon: React.ReactNode;
   name: string;
-  point: number;
+  point: string | number;
 }) {
+  let displayPoint: any = "-";
+  if (typeof point === "number") {
+    displayPoint = Math.round(point * 2) / 2;
+  }
+  if (typeof point === "string" && !Number.isNaN(Number(point))) {
+    displayPoint = Math.round(Number(point) * 2) / 2;
+  }
+
   return (
     <div className="flex flex-col items-center space-y-2 w-32">
       <div className="flex items-center space-x-1">
@@ -14,8 +22,8 @@ export function SkillPoint({
         <span className="font-bold text-lg">{name}</span>
       </div>
       <div className="">
-        <div className="rounded-md text-center bg-dscl-blue1 py-2 w-32">
-          <div className="text-[3.5rem] font-semibold leading-none">{point}</div>
+        <div className="rounded-md text-center bg-second py-2 w-32">
+          <div className="text-[3.5rem] font-semibold leading-none">{displayPoint}</div>
           <div>points</div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import Icons from "@/components/icons";
 import { Popover, Slider } from "antd";
+import { DownloadIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface IComponentProps {
@@ -64,7 +65,7 @@ export function AudioPlayer({ url }: IComponentProps) {
   }, []);
 
   return (
-    <div className="bg-dscl-second text-black flex items-center space-x-2 rounded-md p-6">
+    <div className="bg-[#FFF7E7] text-black flex items-center space-x-2 rounded-md p-6">
       <audio
         ref={audioRef}
         onTimeUpdate={handleAudioTimeUpdate}
@@ -92,7 +93,10 @@ export function AudioPlayer({ url }: IComponentProps) {
       <Popover
         content={(
           <div>
-            <a href={url} target="_blank" download>Download</a>
+            <a href={url} target="_blank" download className="flex items-center space-x-2">
+              <DownloadIcon className="mr-2 size-6" />
+              Download
+            </a>
           </div>
         )}
         title="Options"

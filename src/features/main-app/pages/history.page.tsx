@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { apiService } from "@/services/api.service";
 import { PaginatedResult } from "@/types/interfaces/pagination";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { Checkbox, notification, Popover } from "antd";
 import { clsx } from "clsx";
 import { DownloadIcon, ExternalLink, Trash2Icon, UploadIcon } from "lucide-react";
@@ -28,6 +29,7 @@ interface ExamSession {
 }
 
 export function HistoryPage() {
+  const navigate = useNavigate();
   const [tableState, setTableState] = useState({
     itemsPerPage: 10,
     page: 1,
@@ -208,7 +210,16 @@ export function HistoryPage() {
                 <TableCell className="flex justify-center items-center">
                   <Button size="icon" variant="ghost" title="Download"><DownloadIcon className="w-5 h-5" /></Button>
                   <Button size="icon" variant="ghost" title="Upload"><UploadIcon className="w-5 h-5 " /></Button>
-                  <Button size="icon" variant="ghost" title="Open"><ExternalLink className="w-5 h-5 " /></Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    title="Open"
+                    onClick={() => {
+                      navigate({ to: `/scoring`, search: { examSessionId: row.id, examId: undefined } });
+                    }}
+                  >
+                    <ExternalLink className="w-5 h-5 " />
+                  </Button>
                   <Button
                     size="icon"
                     variant="ghost"

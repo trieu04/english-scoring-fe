@@ -1,13 +1,15 @@
 import Icons from "@/components/icons";
 import Illustrations from "@/components/illustrations";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "@tanstack/react-router";
+import { setFullHeightFromTop } from "@/lib/utils";
+import { apiService } from "@/services/api.service";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Tabs } from "antd";
 import clsx from "clsx";
 import { TrashIcon, UploadIcon } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { setFullHeightFromTop } from "@/lib/utils";
 
 export function UploadPage() {
   return (
@@ -15,7 +17,6 @@ export function UploadPage() {
       <div className="bg-white p-4 rounded-xl h-full">
         <Tabs
           className=""
-          type="card"
           items={[
             {
               label: "File Scoring",
@@ -47,36 +48,105 @@ interface ITask {
 
 function FileScoring() {
   const [uploading, setUploading] = useState(false);
+  const { scoringSystem } = useSearch({ from: "/main-app/upload" });
+
+  const getScoringSystemQuery = useQuery({
+    queryKey: ["/scoring-system/{scoringSystem}", { scoringSystem }],
+    queryFn: async () => {
+      const response = await apiService.get<{
+        id: string;
+        createdAt: string;
+        updatedAt: string;
+        userId: string | null;
+        name: string;
+        description: string | null;
+        speakingTaskFactors: number[];
+        writingTaskFactors: number[];
+      }>(`/scoring-system/${scoringSystem}`);
+      return response;
+    },
+    enabled: !!scoringSystem,
+  });
+
+  const writingTask = getScoringSystemQuery.data?.writingTaskFactors ?? [];
+  const speakingTask = getScoringSystemQuery.data?.speakingTaskFactors ?? [];
+
   const navigate = useNavigate();
-  const [writingTasks] = useState<ITask[]>([
-    {
-      no: 1,
-      taskType: "writing",
-    },
-    {
-      no: 2,
-      taskType: "writing",
-    },
-    {
-      no: 3,
-      taskType: "writing",
-    },
-  ]);
-  const [speakingTasks] = useState<ITask[]>([
-    {
-      no: 1,
-      taskType: "speaking",
-    },
-    {
-      no: 2,
-      taskType: "speaking",
-    },
-    {
-      no: 3,
-      taskType: "speaking",
-    },
-  ]);
+  const [writingTasks, setWritingTask] = useState<ITask[]>([]);
+  const [speakingTasks, setSpeakingTask] = useState<ITask[]>([]);
   const [, setRefresh] = useState(0);
+  useEffect(() => {
+    if (!getScoringSystemQuery.data)
+      return;
+
+    const newWritingTasks: ITask[] = writingTask.map((_, index) => ({
+      no: index + 1,
+      taskType: "writing",
+      questionText: "",
+      answerText: "",
+    }));
+    setWritingTask(newWritingTasks);
+
+    const newSpeakingTasks: ITask[] = speakingTask.map((_, index) => ({
+      no: index + 1,
+      taskType: "speaking",
+      questionText: "",
+      answerText: "",
+    }));
+
+    setSpeakingTask(newSpeakingTasks);
+  }, [writingTask, speakingTask]);
+
+  const handleUpload = async () => {
+    const formData = new FormData();
+
+    formData.append("scoringSystemId", getScoringSystemQuery.data?.id ?? "");
+
+    // Loop through each item in the data array
+    speakingTasks.forEach((item, index) => {
+      formData.append(`speakingTasks[${index}][no]`, item.no);
+      formData.append(`speakingTasks[${index}][taskType]`, item.taskType);
+      formData.append(`speakingTasks[${index}][questionText]`, item.questionText);
+      formData.append(`speakingTasks[${index}][answerText]`, item.answerText);
+
+      if (item.answerFile instanceof File) {
+        formData.append(`speakingTasks[${index}][answerFile]`, item.answerFile);
+      }
+    });
+
+    writingTasks.forEach((item, index) => {
+      formData.append(`writingTasks[${index}][no]`, item.no);
+      formData.append(`writingTasks[${index}][taskType]`, item.taskType);
+      formData.append(`writingTasks[${index}][questionText]`, item.questionText);
+      formData.append(`writingTasks[${index}][answerText]`, item.answerText);
+
+      if (item.answerFile instanceof File) {
+        formData.append(`writingTasks[${index}][answerFile]`, item.answerFile);
+      }
+    });
+
+    try {
+      const response = await apiService.post("/exam-session", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setUploading(false);
+      return;
+      // Navigate to the scoring page with the exam session ID
+      navigate({
+        to: "/scoring",
+        search: {
+          examSessionId: response.examSession.id,
+          examId: response.exam.id,
+        },
+      });
+    }
+    catch (error) {
+      console.error("Upload failed:", error);
+    }
+  };
 
   const renderTasks = (tasks: ITask[], section: "writing" | "speaking") =>
     tasks.map(task => (
@@ -242,15 +312,12 @@ function FileScoring() {
           disabled={uploading}
           onClick={async () => {
             setUploading(true);
-            await new Promise(resolve => setTimeout(resolve, 2000));
             setUploading(false);
 
-            navigate({
-              to: "/scoring",
-              search: {
-                examSession: 123,
-              },
-            });
+            console.log("Writing Tasks:", writingTasks);
+            console.log("Speaking Tasks:", speakingTasks);
+
+            await handleUpload();
           }}
         >
           Upload

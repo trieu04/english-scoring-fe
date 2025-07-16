@@ -6,6 +6,7 @@
 /* 1. Core imports --------------------------------------------------- */
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin '@tailwindcss/typography';
 
 /* 2. Layer order declaration --------------------------------------- */
 @layer theme, base, antd, components, utilities;

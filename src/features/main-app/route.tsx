@@ -51,10 +51,13 @@ const scoringRoute = createRoute({
   getParentRoute: () => mainAppRoute,
   path: "scoring",
   component: ScoringPage,
-  validateSearch: (search) => {
+  validateSearch: (search: {
+    examSessionId?: string;
+    examId?: string;
+  }) => {
     return {
       examSessionId: search.examSessionId ?? undefined,
-      examId: search.exam ?? undefined,
+      examId: search.examId,
     };
   },
 });

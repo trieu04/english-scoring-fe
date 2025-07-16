@@ -10,6 +10,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: false,
+        staleTime: 0,
       },
     },
   });

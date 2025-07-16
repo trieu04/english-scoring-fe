@@ -1,23 +1,32 @@
-import { useState } from "react";
 import Illustrations from "@/components/illustrations";
-import { useQuery } from "@tanstack/react-query";
-import { Spin } from "antd";
-import { WritingComponent } from "../components/writing";
-import { SpeakingComponent } from "../components/speaking";
 import { setFullHeightFromTop } from "@/lib/utils";
+import { apiService } from "@/services/api.service";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Spin } from "antd";
+import { SpeakingComponent } from "../components/speaking";
+import { WritingComponent } from "../components/writing";
+import Icons from "@/components/icons";
+import clsx from "clsx";
 
 export function ScoringPage() {
-  const [examId, setExamId] = useState<number | null>(null);
+  const navigate = useNavigate();
+  const { examSessionId, examId } = useSearch({ from: "/main-app/scoring" });
 
-  // Get examSession from query param in URL
-  const searchParams = new URLSearchParams(window.location.search);
-  const examSessionId = searchParams.get("examSession");
+  const examDetailQuery = useQuery({
+    queryKey: ["/exam-session/{examSessionId}", { examSessionId }],
+    queryFn: () => {
+      return apiService.get(`/exam-session/${examSessionId}`);
+    },
+    enabled: !!examSessionId,
+  });
 
   const examListQuery = useQuery({
-    queryKey: ["exam-list", examSessionId],
-    queryFn: () => {},
+    queryKey: ["/exam-session/{examSessionId}/exam-list", { examSessionId }],
+    queryFn: () => {
+      return apiService.get(`/exam-session/${examSessionId}/exam-list`);
+    },
     enabled: !!examSessionId,
-    staleTime: 0,
   });
 
   return (
@@ -27,9 +36,15 @@ export function ScoringPage() {
           <div className="flex">
             <Illustrations.ExamIllustration />
             <div className="ml-2">
-              <h3>Kỳ thi thử 1</h3>
-              <div>Test count: 2</div>
-              <div>Scoring system: Vstep</div>
+              <h3>{examDetailQuery.data?.name}</h3>
+              <div>
+                Test count:
+                {examDetailQuery.data?.totalExams}
+              </div>
+              <div>
+                Scoring system:
+                {examDetailQuery.data?.scoringSystemName}
+              </div>
             </div>
           </div>
         </div>
@@ -42,16 +57,18 @@ export function ScoringPage() {
               className="overflow-auto px-4"
               ref={setFullHeightFromTop}
             >
-              {examListQuery.isLoading && <Spin className="w-full" size="small" />}
-              {examListQuery.isSuccess
+              {examDetailQuery.isLoading && <Spin className="w-full" size="small" />}
+              {examDetailQuery.isSuccess
                 && (
                   <div className="flex flex-col space-y-2 py-6 max-h-[calc(var(--navbar-height)*0.6)] overflow-y-auto">
-                    {/* {
-                      examListQuery.data.map(item => (
+                    {
+                      examListQuery.data?.map(item => (
                         <div key={item.id} className={clsx("p-2 rounded-sm", item.id === examId && "bg-dscl-blue1")}>
                           <div
                             className="flex items-center space-x-2 cursor-pointer"
-                            onClick={() => { setExamId(item.id); }}
+                            onClick={() => {
+                              navigate({ to: "/scoring", search: { examSessionId, examId: item.id }, replace: true });
+                            }}
                           >
                             <Icons.ExamMultipleChoiceIcon />
                             <div>
@@ -60,7 +77,7 @@ export function ScoringPage() {
                           </div>
                         </div>
                       ))
-                    } */}
+                    }
                   </div>
                 )}
             </div>
