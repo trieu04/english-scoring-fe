@@ -62,39 +62,39 @@ export function LoginPage() {
       </div>
       <div className="w-full max-w-lg space-y-4">
         <div>
-          <label className="mb-2">Email</label>
+          <label className="">Email</label>
           <Input
             placeholder="Email"
-            className="border-0 focus-visible:ring-0 shadow-none"
-            prefix={<MailIcon className="h-5 w-5 text-muted-foreground" />}
+            className="border-0 focus-visible:ring-0 shadow-none h-10 mt-2"
+            prefix={<MailIcon className="h-5 w-5 text-muted-foreground mr-1" />}
             value={loginFormData.username}
             onChange={handleLoginInputChange}
             name="username"
           />
         </div>
         <div>
-          <label className="mb-2">Password</label>
+          <label className="">Password</label>
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="border-0 focus-visible:ring-0 shadow-none"
-            prefix={<LockIcon className="h-5 w-5 text-muted-foreground" />}
+            className="border-0 focus-visible:ring-0 shadow-none h-10 mt-2"
+            prefix={<LockIcon className="h-5 w-5 text-muted-foreground  mr-1" />}
             suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
             value={loginFormData.password}
             onChange={handleLoginInputChange}
             name="password"
           />
         </div>
-        <div className="flex flex-row-reverse">
+        <div className="flex flex-row-reverse mb-2">
           <Button variant="link">Forgot password</Button>
         </div>
         <div className="mb-8">
           <Button className="w-full" disabled={loading}>Log In</Button>
         </div>
-        <div className="flex flex-col items-center">
+        <div className="mt-12 flex flex-col items-center">
           <div>New to English Scoring</div>
           <Link to="/signup">
-            <Button variant="ghost">Sign Up</Button>
+            <Button variant="link">Create a account</Button>
           </Link>
         </div>
       </div>

@@ -69,7 +69,7 @@ export function SignupPage() {
           <label className="mb-2">Email</label>
           <Input
             placeholder="Email"
-            className="border-0 focus-visible:ring-0 shadow-none"
+            className="border-0 focus-visible:ring-0 shadow-none h-10 mt-2"
             prefix={<MailIcon className="h-5 w-5 text-muted-foreground" />}
             value={loginFormData.email}
             onChange={handleLoginInputChange}
@@ -80,7 +80,7 @@ export function SignupPage() {
           <label className="mb-2">Name</label>
           <Input
             placeholder="Name"
-            className="border-0 focus-visible:ring-0 shadow-none"
+            className="border-0 focus-visible:ring-0 shadow-none h-10 mt-2"
             prefix={<UserIcon className="h-5 w-5 text-muted-foreground" />}
             value={loginFormData.name}
             onChange={handleLoginInputChange}
@@ -92,7 +92,7 @@ export function SignupPage() {
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="border-0 focus-visible:ring-0 shadow-none"
+            className="border-0 focus-visible:ring-0 shadow-none h-10 mt-2"
             prefix={<LockIcon className="h-5 w-5 text-muted-foreground" />}
             suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
             value={loginFormData.password}
@@ -105,7 +105,7 @@ export function SignupPage() {
           <Input
             type={showPassword ? "text" : "password"}
             placeholder="Password"
-            className="border-0 focus-visible:ring-0 shadow-none"
+            className="border-0 focus-visible:ring-0 shadow-none h-10 mt-2"
             prefix={<LockIcon className="h-5 w-5 text-muted-foreground" />}
             suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
             value={loginFormData.confirmPassword}
@@ -116,10 +116,10 @@ export function SignupPage() {
         <div className="mb-8">
           <Button className="w-full" disabled={loading}>Sign Up</Button>
         </div>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center mt-12">
           <div>Already have an account?</div>
           <Link to="/login">
-            <Button variant="ghost">Login</Button>
+            <Button variant="link">Login</Button>
           </Link>
         </div>
       </div>
