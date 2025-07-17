@@ -10,11 +10,13 @@ import { ScoringPage } from "@/features/main-app/pages/scoring.page";
 import { SettingsPage } from "@/features/main-app/pages/settings.page";
 import { UploadPage } from "@/features/main-app/pages/upload.page";
 import { NewScoringSystemPage } from "./pages/new-scoring-system";
+import { requireAuth } from "@/lib/auth-guard";
 
 const mainAppRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "main-app",
   component: MainAppLayout,
+  beforeLoad: requireAuth,
 });
 
 const dashboardRoute = createRoute({

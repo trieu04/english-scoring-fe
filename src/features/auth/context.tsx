@@ -4,6 +4,7 @@ import { DefinedUseQueryResult, useMutation, UseMutationResult, useQuery, useQue
 import { createContext, ReactNode, useMemo } from "react";
 import { getProfileApi, googleLoginApi, loginApi, LoginDto, signupApi, SignupDto } from "./apis/auth.api";
 import { use } from "react";
+import { useNavigate } from "@tanstack/react-router";
 
 export interface AuthContextType {
   getUserQuery: DefinedUseQueryResult<IUser | null>;
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const logoutMutation = useMutation({
-    onSuccess: () => {
+    mutationFn: async () => {
       localStorage.removeItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
       queryClient.setQueryData(["auth", "user"], null);
     },

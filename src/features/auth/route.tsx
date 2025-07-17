@@ -3,11 +3,13 @@ import { rootRoute } from "../../app/router";
 import { AuthLayout } from "./layout";
 import { LoginPage } from "./pages/login.page";
 import { SignupPage } from "./pages/signup.page";
+import { requireGuest } from "@/lib/auth-guard";
 
 const authRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "auth",
   component: AuthLayout,
+  beforeLoad: requireGuest,
 });
 
 const loginRoute = createRoute({

@@ -9,6 +9,7 @@ export function LoginPage() {
   const auth = useAuth();
   const [loginFormData, setLoginFormData] = useState({ username: "", password: "" });
   const navigate = useNavigate();
+  // const search = useSearch({ from: "/login" });
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -37,8 +38,10 @@ export function LoginPage() {
         message: "Login successful",
       });
 
+      // Redirect to the intended page or dashboard
+      const redirectTo = "/dashboard";
       navigate({
-        to: "/dashboard",
+        to: redirectTo,
       });
     }
     catch (error: any) {

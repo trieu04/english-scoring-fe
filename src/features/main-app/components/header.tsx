@@ -1,11 +1,13 @@
 import Logos from "@/components/logos";
 import { useAuth } from "@/features/auth/context";
+import { useNavigate } from "@tanstack/react-router";
 import { Button, Popover } from "antd";
 import { ChevronDown, LogOutIcon } from "lucide-react";
 import { useState } from "react";
 
 export function HeaderComponent() {
-  const { getUserQuery: { data: user } } = useAuth();
+  const { getUserQuery: { data: user }, logoutMutation } = useAuth();
+  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
 
@@ -17,6 +19,12 @@ export function HeaderComponent() {
     setOpen(newOpen);
   };
 
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+    navigate({ to: "/login" });
+  }
+
+
   return (
     <header className="flex items-center justify-between h-[var(--header-height)] mx-4">
       <Logos.HeaderLogo />
@@ -24,7 +32,7 @@ export function HeaderComponent() {
       <Popover
         content={() => (
           <div className="flex flex-col space">
-            <Button type="text" onClick={hide} className="text-left" icon={<LogOutIcon className="size-4" />} iconPosition="end">
+            <Button type="text" onClick={handleLogout} className="text-left" icon={<LogOutIcon className="size-4" />} iconPosition="end">
               Logout
             </Button>
           </div>
