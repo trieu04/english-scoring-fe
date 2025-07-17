@@ -30,7 +30,7 @@ export function SignupPage() {
       name: formData.get("name") as string,
       email: formData.get("email") as string,
       password: formData.get("password") as string,
-      confirmPassword: formData.get("confirm_password") as string,
+      confirmPassword: formData.get("confirmPassword") as string,
     };
 
     if (dto.password !== dto.confirmPassword) {
@@ -110,7 +110,7 @@ export function SignupPage() {
             suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
             value={loginFormData.confirmPassword}
             onChange={handleLoginInputChange}
-            name="confirm_password"
+            name="confirmPassword"
           />
         </div>
         <div className="mb-8">
