@@ -8,6 +8,7 @@ import { SpeakingComponent } from "../components/speaking";
 import { WritingComponent } from "../components/writing";
 import Icons from "@/components/icons";
 import clsx from "clsx";
+import { useEffect } from "react";
 
 export function ScoringPage() {
   const navigate = useNavigate();
@@ -16,7 +17,13 @@ export function ScoringPage() {
   const examDetailQuery = useQuery({
     queryKey: ["/exam-session/{examSessionId}", { examSessionId }],
     queryFn: () => {
-      return apiService.get(`/exam-session/${examSessionId}`);
+      return apiService.get<{
+        id: string;
+        name: string;
+        description: string;
+        scoringSystemName: string;
+        totalExams: number;
+      }>(`/exam-session/${examSessionId}`);
     },
     enabled: !!examSessionId,
   });
@@ -24,10 +31,20 @@ export function ScoringPage() {
   const examListQuery = useQuery({
     queryKey: ["/exam-session/{examSessionId}/exam-list", { examSessionId }],
     queryFn: () => {
-      return apiService.get(`/exam-session/${examSessionId}/exam-list`);
+      return apiService.get<{
+        id: string;
+        name: string;
+        createdAt: string;
+      }[]>(`/exam-session/${examSessionId}/exam-list`);
     },
     enabled: !!examSessionId,
   });
+
+  useEffect(() => {
+    if (!examId && examListQuery.data?.length) {
+      navigate({ to: "/scoring", search: { examSessionId, examId: examListQuery.data[0].id }, replace: true });
+    }
+  }, [examId, examListQuery.data, examSessionId, navigate]);
 
   return (
     <div className="flex space-x-3 px-3 h-full">
@@ -62,8 +79,8 @@ export function ScoringPage() {
                 && (
                   <div className="flex flex-col space-y-2 py-6 max-h-[calc(var(--navbar-height)*0.6)] overflow-y-auto">
                     {
-                      examListQuery.data?.map(item => (
-                        <div key={item.id} className={clsx("p-2 rounded-sm", item.id === examId && "bg-dscl-blue1")}>
+                      examListQuery.data?.map((item, idx) => (
+                        <div key={item.id} className={clsx("p-2 rounded-sm", item.id === examId && "bg-second")}>
                           <div
                             className="flex items-center space-x-2 cursor-pointer"
                             onClick={() => {
@@ -72,7 +89,7 @@ export function ScoringPage() {
                           >
                             <Icons.ExamMultipleChoiceIcon />
                             <div>
-                              {item.name}
+                              {item.name || `Test ${idx + 1}`}
                             </div>
                           </div>
                         </div>

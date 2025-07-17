@@ -1,66 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "@/components/ui/link";
 import { Pane } from "@/components/ui/pane";
 import { cn } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
-import { IPagination } from "@/types/interfaces/pagination";
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { notification } from "antd";
 import clsx from "clsx";
-import { Mic2Icon, MicIcon, PencilIcon, PlusIcon, SpeakerIcon } from "lucide-react";
-import { useMemo, useState } from "react";
-import { set } from "zod";
-
-interface ScoringSystem {
-  id: string;
-  name: string;
-  writingTaskFactors: number[];
-  speakingTaskFactors: number[];
-}
-
-const scoringSystems = [
-  {
-    key: "vstep",
-    label: "Vstep",
-    color: "bg-[#3ec6f2] text-white",
-    box: "bg-[#eafaff] border-[#3ec6f2] text-[#3ec6f2]",
-    rows: [
-      {
-        icon: <PencilIcon className="w-7 h-7 text-[#3ec6f2]" />,
-        label: "Writing",
-      },
-      {
-        icon: <MicIcon className="w-7 h-7 text-[#3ec6f2]" />,
-        label: "Speaking",
-      },
-    ],
-  },
-  {
-    key: "custom",
-    label: "My_custom",
-    color: "bg-[#6c7cf3] text-white",
-    box: "bg-[#f2f4ff] border-[#6c7cf3] text-[#6c7cf3]",
-    rows: [
-      {
-        icon: <PencilIcon className="w-7 h-7 text-[#6c7cf3]" />,
-        label: "Writing",
-      },
-      {
-        icon: <MicIcon className="w-7 h-7 text-[#6c7cf3]" />,
-        label: "Speaking",
-      },
-    ],
-  },
-];
-
-const tasks = [
-  { label: "Task 1", value: 0.25, color: "bg-cyan-50 border-cyan-200 text-cyan-600" },
-  { label: "Task 2", value: 0.4, color: "bg-pink-50 border-pink-200 text-pink-600" },
-  { label: "Task 3", value: 0.35, color: "bg-orange-50 border-orange-200 text-orange-600" },
-  { label: "Task 4", value: 0.35, color: "bg-purple-50 border-purple-200 text-purple-600" },
-];
+import { MicIcon, PencilIcon } from "lucide-react";
+import { useState } from "react";
 
 function getTaskTextColorClass(number: number) {
   const taskColors = [
@@ -135,6 +83,8 @@ function TasksRow({
 
 export function NewScoringSystemPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const [numberOfWritingTasks, setNumberOfWritingTasks] = useState(3);
   const [numberOfSpeakingTasks, setNumberOfSpeakingTasks] = useState(3);
 
@@ -177,16 +127,15 @@ export function NewScoringSystemPage() {
 
   const handleCreateScoringSystem = async () => {
     try {
-      const newScoringSystem: ScoringSystem = {
-        id: "",
-        name: "New Scoring System",
+      await apiService.post("/scoring-systems", {
+        ...formData,
         writingTaskFactors,
         speakingTaskFactors,
-      };
-      await apiService.post("/scoring-systems", newScoringSystem);
+      });
       notification.success({
         message: "Scoring system created successfully",
       });
+      await queryClient.invalidateQueries({ queryKey: ["/scoring-system"] });
       navigate({ to: "/settings" });
     }
     catch (error) {

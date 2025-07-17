@@ -21,6 +21,7 @@ export default antfu({
       "react-refresh/only-export-components": "off",
       "react/no-array-index-key": "off",
       "no-alert": "off",
+      "react-hooks-extra/no-direct-set-state-in-use-effect": "off",
     },
   },
   javascript: true,

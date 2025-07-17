@@ -98,16 +98,17 @@ function FileScoring() {
   }, [writingTask, speakingTask]);
 
   const handleUpload = async () => {
+    setUploading(true);
     const formData = new FormData();
 
     formData.append("scoringSystemId", getScoringSystemQuery.data?.id ?? "");
 
     // Loop through each item in the data array
     speakingTasks.forEach((item, index) => {
-      formData.append(`speakingTasks[${index}][no]`, item.no);
+      formData.append(`speakingTasks[${index}][no]`, String(item.no));
       formData.append(`speakingTasks[${index}][taskType]`, item.taskType);
-      formData.append(`speakingTasks[${index}][questionText]`, item.questionText);
-      formData.append(`speakingTasks[${index}][answerText]`, item.answerText);
+      formData.append(`speakingTasks[${index}][questionText]`, item.questionText || "");
+      formData.append(`speakingTasks[${index}][answerText]`, item.answerText || "");
 
       if (item.answerFile instanceof File) {
         formData.append(`speakingTasks[${index}][answerFile]`, item.answerFile);
@@ -115,10 +116,10 @@ function FileScoring() {
     });
 
     writingTasks.forEach((item, index) => {
-      formData.append(`writingTasks[${index}][no]`, item.no);
+      formData.append(`writingTasks[${index}][no]`, String(item.no));
       formData.append(`writingTasks[${index}][taskType]`, item.taskType);
-      formData.append(`writingTasks[${index}][questionText]`, item.questionText);
-      formData.append(`writingTasks[${index}][answerText]`, item.answerText);
+      formData.append(`writingTasks[${index}][questionText]`, item.questionText || "");
+      formData.append(`writingTasks[${index}][answerText]`, item.answerText || "");
 
       if (item.answerFile instanceof File) {
         formData.append(`writingTasks[${index}][answerFile]`, item.answerFile);
@@ -126,15 +127,14 @@ function FileScoring() {
     });
 
     try {
-      const response = await apiService.post("/exam-session", formData, {
+      const response = await apiService.post<{
+        examSession: { id: string };
+        exam: { id: string };
+      }>("/exam-session", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      setUploading(false);
-      return;
-      // Navigate to the scoring page with the exam session ID
       navigate({
         to: "/scoring",
         search: {
@@ -146,6 +146,7 @@ function FileScoring() {
     catch (error) {
       console.error("Upload failed:", error);
     }
+    setUploading(false);
   };
 
   const renderTasks = (tasks: ITask[], section: "writing" | "speaking") =>
@@ -310,15 +311,7 @@ function FileScoring() {
           className=""
           size="lg"
           disabled={uploading}
-          onClick={async () => {
-            setUploading(true);
-            setUploading(false);
-
-            console.log("Writing Tasks:", writingTasks);
-            console.log("Speaking Tasks:", speakingTasks);
-
-            await handleUpload();
-          }}
+          onClick={handleUpload}
         >
           Upload
         </Button>

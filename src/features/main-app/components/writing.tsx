@@ -11,7 +11,7 @@ import { OverallPoint } from "./overall-point";
 import { SkillPoint } from "./skill-point";
 
 interface IComponentProps {
-  examId: number | null;
+  examId?: string;
 }
 
 export function WritingComponent({ examId }: IComponentProps) {
