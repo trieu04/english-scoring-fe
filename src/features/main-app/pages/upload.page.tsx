@@ -95,7 +95,7 @@ function FileScoring() {
     }));
 
     setSpeakingTask(newSpeakingTasks);
-  }, [writingTask, speakingTask]);
+  }, [writingTask, speakingTask, getScoringSystemQuery.data]);
 
   const handleUpload = async () => {
     setUploading(true);
@@ -154,7 +154,7 @@ function FileScoring() {
       <div
         key={task.taskType + task.no}
         className={`border-1 rounded-xl p-4 mb-6 min-h-90 ${section === "writing" ? "border-[#3881A2]" : "border-[#FF9500]"
-        }`}
+          }`}
       >
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-semibold">
@@ -167,48 +167,48 @@ function FileScoring() {
         <div className="mb-4 p-3 bg-white rounded-lg flex items-center border border-gray-300">
           {task.questionFile
             ? (
-                <>
-                  <div className="flex grow items-center space-x-2 mr-4">
-                    <Illustrations.TrashIllustration />
-                    <div className="flex flex-col">
-                      <div className="">
-                        {task.questionFile.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {`${(task.questionFile.size / 1024).toFixed(2)} KB`}
-                      </div>
+              <>
+                <div className="flex grow items-center space-x-2 mr-4">
+                  <Illustrations.TrashIllustration />
+                  <div className="flex flex-col">
+                    <div className="">
+                      {task.questionFile.name}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {`${(task.questionFile.size / 1024).toFixed(2)} KB`}
                     </div>
                   </div>
-                  <div
-                    className="cursor-pointer p-2"
-                    onClick={() => {
-                      task.questionFile = undefined;
-                      if (task.questionFileInputRef?.current)
-                        task.questionFileInputRef.current.value = "";
-                      setRefresh(prev => prev + 1);
-                    }}
-                  >
-                    <TrashIcon />
-                  </div>
-                </>
-              )
+                </div>
+                <div
+                  className="cursor-pointer p-2"
+                  onClick={() => {
+                    task.questionFile = undefined;
+                    if (task.questionFileInputRef?.current)
+                      task.questionFileInputRef.current.value = "";
+                    setRefresh(prev => prev + 1);
+                  }}
+                >
+                  <TrashIcon />
+                </div>
+              </>
+            )
             : (
-                <>
-                  <textarea
-                    className="w-full p-2 border rounded border-gray-300"
-                    rows={2}
-                    placeholder="Type your answer..."
-                    value={task.questionText}
-                    onChange={(e) => {
-                      task.questionText = e.target.value;
-                      setRefresh(prev => prev + 1);
-                    }}
-                  />
-                  <label htmlFor={`upload-question-${task.taskType}-${task.no}`} className="cursor-pointer p-4 flex items-center">
-                    <UploadIcon />
-                  </label>
-                </>
-              )}
+              <>
+                <textarea
+                  className="w-full p-2 border rounded border-gray-300"
+                  rows={2}
+                  placeholder="Type your answer..."
+                  value={task.questionText}
+                  onChange={(e) => {
+                    task.questionText = e.target.value;
+                    setRefresh(prev => prev + 1);
+                  }}
+                />
+                <label htmlFor={`upload-question-${task.taskType}-${task.no}`} className="cursor-pointer p-4 flex items-center">
+                  <UploadIcon />
+                </label>
+              </>
+            )}
           <input
             placeholder="Upload your file"
             type="file"
@@ -224,54 +224,62 @@ function FileScoring() {
           />
         </div>
         <p className="mb-2">Answer</p>
-        <div className="mb-4 p-3 bg-white rounded-lg flex items-center border border-gray-300">
+        <div className="mb-4 p-3 bg-white rounded-lg flex items-center justify-center border border-gray-300">
           {task.answerFile
             ? (
-                <>
-                  <div className="flex grow items-center space-x-2 mr-4">
-                    <Illustrations.TrashIllustration />
-                    <div className="flex flex-col">
-                      <div className="">
-                        {task.answerFile.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {`${(task.answerFile.size / 1024).toFixed(2)} KB`}
-                      </div>
+              <>
+                <div className="flex grow items-center space-x-2 mr-4">
+                  <Illustrations.TrashIllustration />
+                  <div className="flex flex-col">
+                    <div className="">
+                      {task.answerFile.name}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {`${(task.answerFile.size / 1024).toFixed(2)} KB`}
                     </div>
                   </div>
-                  <div
-                    className="cursor-pointer p-2"
-                    onClick={() => {
-                      task.answerFile = undefined;
-                      if (task.answerFileInputRef?.current)
-                        task.answerFileInputRef.current.value = "";
-                      setRefresh(prev => prev + 1);
-                    }}
-                  >
-                    <TrashIcon />
-                  </div>
-                </>
-              )
+                </div>
+                <div
+                  className="cursor-pointer p-2"
+                  onClick={() => {
+                    task.answerFile = undefined;
+                    if (task.answerFileInputRef?.current)
+                      task.answerFileInputRef.current.value = "";
+                    setRefresh(prev => prev + 1);
+                  }}
+                >
+                  <TrashIcon />
+                </div>
+              </>
+            )
             : (
-                <>
-                  {task.taskType === "writing"
-                    && (
-                      <textarea
-                        className="w-full p-2 border rounded border-gray-300"
-                        rows={2}
-                        placeholder="Type your answer..."
-                        value={task.answerText}
-                        onChange={(e) => {
-                          task.answerText = e.target.value;
-                          setRefresh(prev => prev + 1);
-                        }}
-                      />
-                    )}
-                  <label htmlFor={`upload-answer-${task.taskType}-${task.no}`} className="cursor-pointer p-4 flex items-center">
+              <>
+                {task.taskType === "writing"
+                  && (<>
+                    <textarea
+                      className="w-full p-2 border rounded border-gray-300"
+                      rows={2}
+                      placeholder="Type your answer..."
+                      value={task.answerText}
+                      onChange={(e) => {
+                        task.answerText = e.target.value;
+                        setRefresh(prev => prev + 1);
+                      }}
+                    />
+                    <label htmlFor={`upload-answer-${task.taskType}-${task.no}`} className="cursor-pointer p-4 flex items-center">
+                      <UploadIcon />
+                    </label>
+                  </>
+                  )}
+                {task.taskType === "speaking" &&
+                  <label htmlFor={`upload-answer-${task.taskType}-${task.no}`} className="cursor-pointer p-4 flex items-center justify-center">
                     <UploadIcon />
                   </label>
-                </>
-              )}
+
+                }
+
+              </>
+            )}
           <input
             placeholder="Upload your file"
             type="file"
