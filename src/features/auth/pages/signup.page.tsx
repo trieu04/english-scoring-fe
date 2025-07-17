@@ -110,7 +110,7 @@ export function SignupPage() {
             suffix={showPassword ? <EyeOffIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" /> : <EyeIcon onClick={togglePasswordVisibility} className="h-5 w-5 text-muted-foreground" />}
             value={loginFormData.confirmPassword}
             onChange={handleLoginInputChange}
-            name="confirmPassword"
+            name="confirm_password"
           />
         </div>
         <div className="mb-8">
