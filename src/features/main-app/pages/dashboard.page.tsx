@@ -78,7 +78,7 @@ export function DashboardPage() {
                         {sys.icon}
                         <span className="font-semibold text-base">{sys.label}</span>
                       </div>
-                      <span className="font-bold text-lg">{scoringSystemCounts[sys.key]}</span>
+                      <span className="font-bold text-lg">{scoringSystemCounts[sys.key as "vstep" | "ielts" | "aptis" | "other"]}</span>
                     </div>
                   ))}
                 </div>
