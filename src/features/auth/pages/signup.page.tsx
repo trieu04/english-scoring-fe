@@ -54,6 +54,9 @@ export function SignupPage() {
 
     navigate({
       to: "/dashboard",
+      search: {
+        isFromLogin: true,
+      },
     });
   };
 

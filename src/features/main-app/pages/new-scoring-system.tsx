@@ -127,7 +127,7 @@ export function NewScoringSystemPage() {
 
   const handleCreateScoringSystem = async () => {
     try {
-      await apiService.post("/scoring-systems", {
+      await apiService.post("/scoring-system", {
         ...formData,
         writingTaskFactors,
         speakingTaskFactors,

@@ -1,6 +1,10 @@
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/features/auth/context";
 
 export function DashboardProfilePage() {
+  const auth = useAuth();
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-md mx-4">
       <h1 className="text-2xl font-semibold mb-1">My account</h1>
@@ -23,6 +27,8 @@ export function DashboardProfilePage() {
                 id="name"
                 className="pl-10"
                 placeholder="Enter your name"
+                value={auth.getUserQuery.data?.name || ""}
+                readOnly
                 defaultValue="nguyenthia"
               />
             </div>
@@ -44,7 +50,8 @@ export function DashboardProfilePage() {
                 id="email"
                 className="pl-10"
                 placeholder="Enter your email"
-                defaultValue="nguyenthia@gmail.com"
+                value={auth.getUserQuery.data?.email || ""}
+                readOnly
               />
             </div>
           </div>
@@ -64,7 +71,8 @@ export function DashboardProfilePage() {
                 id="phone"
                 className="pl-10"
                 placeholder="Enter your phone number"
-                defaultValue="0123456789"
+                value=""
+                readOnly
               />
             </div>
           </div>
@@ -84,24 +92,22 @@ export function DashboardProfilePage() {
                 id="role"
                 className="pl-10"
                 defaultValue="Admin"
+                value={auth.getUserQuery.data?.roles.join(", ") || ""}
                 readOnly
               />
             </div>
           </div>
 
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
-            <button
+            <Button
               type="button"
               className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition"
             >
               Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 rounded-md bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"
-            >
+            </Button>
+            <Button disabled>
               Save
-            </button>
+            </Button>
           </div>
         </div>
       </div>

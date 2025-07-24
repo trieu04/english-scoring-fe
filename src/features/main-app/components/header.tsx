@@ -22,8 +22,7 @@ export function HeaderComponent() {
   const handleLogout = async () => {
     await logoutMutation.mutateAsync();
     navigate({ to: "/login" });
-  }
-
+  };
 
   return (
     <header className="flex items-center justify-between h-[var(--header-height)] mx-4">
@@ -46,7 +45,7 @@ export function HeaderComponent() {
       >
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-full bg-gray-300" />
-          <span className="text-sm font-medium">{user?.name || "User"}</span>
+          <span className="text-sm font-medium">{user?.name || "Not logged in"}</span>
           <ChevronDown className="size-4" />
         </div>
       </Popover>

@@ -39,9 +39,11 @@ export function LoginPage() {
       });
 
       // Redirect to the intended page or dashboard
-      const redirectTo = "/dashboard";
       navigate({
-        to: redirectTo,
+        to: "/dashboard",
+        search: {
+          isFromLogin: true,
+        },
       });
     }
     catch (error: any) {

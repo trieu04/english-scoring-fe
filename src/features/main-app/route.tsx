@@ -23,6 +23,13 @@ const dashboardRoute = createRoute({
   getParentRoute: () => mainAppRoute,
   path: "dashboard",
   component: DashboardPage,
+  validateSearch: (search: {
+    isFromLogin?: boolean;
+  }) => {
+    return {
+      isFromLogin: search.isFromLogin ?? undefined,
+    };
+  },
 });
 
 const historyRoute = createRoute({

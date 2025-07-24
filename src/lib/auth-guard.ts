@@ -3,7 +3,7 @@ import { LOCAL_STORAGE_KEY } from "@/constants/local-storage.constant";
 
 export function requireAuth() {
   const token = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-  
+
   if (!token) {
     throw redirect({
       to: "/login",
@@ -16,10 +16,13 @@ export function requireAuth() {
 
 export function requireGuest() {
   const token = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-  
+
   if (token) {
     throw redirect({
       to: "/dashboard",
+      search: {
+        isFromLogin: false,
+      },
     });
   }
 }

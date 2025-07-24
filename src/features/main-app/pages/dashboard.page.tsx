@@ -1,16 +1,17 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Select, DatePicker, Spin } from "antd";
-import { useMemo, useState } from "react";
 import Icons from "@/components/icons";
 import Illustrations from "@/components/illustrations";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "@/components/ui/link";
 import { Pane } from "@/components/ui/pane";
 import { Pane2 } from "@/components/ui/pane2";
-import { HistoryIcon } from "lucide-react";
-import { Link } from "@/components/ui/link";
-import { PaginatedResult } from "@/types/interfaces/pagination";
-import { useQuery } from "@tanstack/react-query";
 import { apiService } from "@/services/api.service";
+import { PaginatedResult } from "@/types/interfaces/pagination";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Spin } from "antd";
+import { HistoryIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 export function DashboardPage() {
   const [scoringSystem, setScoringSystem] = useState();
@@ -54,6 +55,21 @@ export function DashboardPage() {
       }>("/dashboard");
     },
   });
+
+  const navigate = useNavigate();
+  const { isFromLogin } = useSearch({ from: "/main-app/dashboard" });
+
+  useEffect(() => {
+    if (isFromLogin) {
+      if (getDashboardQuery.isSuccess) {
+        if (getDashboardQuery.data.submissionCount === 0) {
+          navigate({
+            to: "/information",
+          });
+        }
+      }
+    }
+  }, [getDashboardQuery.isSuccess, isFromLogin]);
 
   const barChartData = useMemo(() => {
     if (!getDashboardQuery.data)

@@ -18,11 +18,14 @@ export const rootRoute = createRootRoute({
     // Check if user is accessing root path
     if (location.pathname === "/") {
       const token = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-      
+
       // If authenticated, redirect to dashboard
       if (token) {
         throw redirect({
           to: "/dashboard",
+          search: {
+            isFromLogin: false,
+          },
         });
       }
       // If not authenticated, redirect to login
