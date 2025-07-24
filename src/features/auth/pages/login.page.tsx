@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/context";
+import { handleApiError } from "@/lib/error-handle";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Input, notification } from "antd";
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from "lucide-react";
@@ -47,12 +48,10 @@ export function LoginPage() {
       });
     }
     catch (error: any) {
-      console.error("Login error:", error);
-      notification.error({
-        message: "Login failed",
-        description: error?.message,
+      handleApiError(error, {
+        customMessage: "Login failed",
       });
-    };
+    }
   };
 
   const loading = auth.loginMutation.isPending;

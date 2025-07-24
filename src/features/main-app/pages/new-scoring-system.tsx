@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pane } from "@/components/ui/pane";
+import { handleApiError } from "@/lib/error-handle";
 import { cn } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
 import { useQueryClient } from "@tanstack/react-query";
@@ -139,9 +140,8 @@ export function NewScoringSystemPage() {
       navigate({ to: "/settings" });
     }
     catch (error) {
-      notification.error({
-        message: "Failed to create scoring system",
-        description: error instanceof Error ? error.message : "Unknown error",
+      handleApiError(error, {
+        customMessage: "Failed to create scoring system",
       });
     }
   };

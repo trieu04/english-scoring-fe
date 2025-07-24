@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import { OverallPoint } from "./overall-point";
 import { SkillPoint } from "./skill-point";
+import { handleApiError } from "@/lib/error-handle";
 
 interface IComponentProps {
   examId?: string;
@@ -54,9 +55,8 @@ export function WritingComponent({ examId }: IComponentProps) {
       await getWritingSubmissionQuery.refetch();
     }
     catch (error) {
-      notification.error({
-        message: "Failed to score the submissions.",
-        description: `${error instanceof Error ? error.message : ""}`,
+      handleApiError(error, {
+        customMessage: "Failed to rescore writing submissions",
       });
     }
     setIsScoring(false);

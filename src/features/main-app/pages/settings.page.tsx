@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Pane } from "@/components/ui/pane";
+import { handleApiError } from "@/lib/error-handle";
 import { cn } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
 import { useQuery } from "@tanstack/react-query";
@@ -7,7 +8,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { notification } from "antd";
 import clsx from "clsx";
 import { MicIcon, PencilIcon, PlusIcon } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
 function getTaskTextColorClass(number: number) {
   const taskColors = [
@@ -91,13 +92,7 @@ export function SettingsPage() {
     const blankData = [] as ScoringSystemRecord[];
     const defaultTaskFactors = [1, 1, 1];
 
-    const { isError, isSuccess, data } = getScoringSystemsQuery;
-    if (isError) {
-      notification.error({
-        message: "Failed to load scoring systems",
-        description: getScoringSystemsQuery.error.message,
-      });
-    }
+    const { isSuccess, data } = getScoringSystemsQuery;
 
     if (isSuccess) {
       return data.map(item => ({
@@ -110,6 +105,14 @@ export function SettingsPage() {
 
     return blankData;
   }, [getScoringSystemsQuery]);
+
+  useEffect(() => {
+    if (getScoringSystemsQuery.isError) {
+      handleApiError(getScoringSystemsQuery.error, {
+        customMessage: "Failed to load scoring systems",
+      });
+    }
+  }, [getScoringSystemsQuery.isError, getScoringSystemsQuery.error]);
 
   return (
     <Pane title="Scoring systems">

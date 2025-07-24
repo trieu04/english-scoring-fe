@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Pane } from "@/components/ui/pane";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { handleApiError } from "@/lib/error-handle";
 import { apiService } from "@/services/api.service";
 import { PaginatedResult } from "@/types/interfaces/pagination";
 import { useQuery } from "@tanstack/react-query";
@@ -9,7 +10,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Checkbox, notification, Popover } from "antd";
 import { clsx } from "clsx";
 import { DownloadIcon, ExternalLink, Trash2Icon, UploadIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface ScoringSystem {
   id: string;
@@ -70,44 +71,38 @@ export function HistoryPage() {
       totalItems: 0,
       totalPages: 1,
     };
-
-    const { isError, isSuccess, error, data } = listExamSessionQuery;
-    if (isError) {
-      notification.error({
-        message: "Failed to load submission history",
-        description: error.message,
-      });
-    }
-
-    if (isSuccess) {
-      const { data: rows, meta: { currentPage, totalItems, totalPages } } = data;
-
-      return {
-        rows,
-        currentPage,
-        totalItems,
-        totalPages,
-      };
+    if (listExamSessionQuery.isSuccess) {
+      const { data: rows, meta: { currentPage, totalItems, totalPages } } = listExamSessionQuery.data;
+      return { rows, currentPage, totalItems, totalPages };
     }
 
     return blankTableData;
-  }, [listExamSessionQuery]);
+  }, [listExamSessionQuery.isSuccess, listExamSessionQuery.data]);
 
   const listScoringSystemData = useMemo(() => {
     const blankData = [] as ScoringSystem[];
-    const { isError, isSuccess, error, data } = listScoringSystemQuery;
-    if (isError) {
-      notification.error({
-        message: "Failed to load scoring systems",
-        description: error.message,
-      });
-      return blankData;
-    }
-    if (isSuccess) {
-      return data;
+
+    if (listScoringSystemQuery.isSuccess) {
+      return listScoringSystemQuery.data;
     }
     return blankData;
-  }, [listScoringSystemQuery]);
+  }, [listScoringSystemQuery.isSuccess, listScoringSystemQuery.data]);
+
+  useEffect(() => {
+    if (listExamSessionQuery.isError) {
+      handleApiError(listExamSessionQuery.error, {
+        customMessage: "Failed to load exam sessions",
+      });
+    }
+  }, [listExamSessionQuery.isError, listExamSessionQuery.error]);
+
+  useEffect(() => {
+    if (listScoringSystemQuery.isError) {
+      handleApiError(listScoringSystemQuery.error, {
+        customMessage: "Failed to load scoring systems",
+      });
+    }
+  }, [listScoringSystemQuery.isError, listScoringSystemQuery.error]);
 
   const deleteExamSession = async (examSessionId: string) => {
     try {
@@ -121,9 +116,8 @@ export function HistoryPage() {
       listExamSessionQuery.refetch();
     }
     catch (error) {
-      notification.error({
-        message: "Failed to delete submission",
-        description: error instanceof Error ? error.message : "An unexpected error occurred",
+      handleApiError(error, {
+        customMessage: "Failed to delete submission",
       });
     }
   };

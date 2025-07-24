@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { ConfigProvider } from "antd";
+import { AxiosError } from "axios";
 import { AuthProvider } from "../features/auth/context";
 import { router } from "./router";
 
@@ -11,6 +12,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       queries: {
         refetchOnWindowFocus: false,
         staleTime: 0,
+        retry: (failureCount, error) => {
+          if (error instanceof AxiosError) {
+            if (error.response?.status === 401) {
+              // Unauthorized, do not retry
+              return false;
+            }
+          }
+          if (failureCount < 3 && error instanceof Error) {
+            return true;
+          }
+          return false;
+        },
       },
     },
   });

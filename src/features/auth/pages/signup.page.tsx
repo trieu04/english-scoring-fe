@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/context";
+import { handleApiError } from "@/lib/error-handle";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Input, notification } from "antd";
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon, UserIcon } from "lucide-react";
@@ -46,9 +47,8 @@ export function SignupPage() {
 
     await auth.signupMutation.mutateAsync(dto)
       .catch((error: any) => {
-        notification.error({
-          message: "Login failed",
-          description: error?.message,
+        handleApiError(error, {
+          customMessage: "Signup failed",
         });
       });
 

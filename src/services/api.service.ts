@@ -1,7 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 import { env } from "@/config/env.client";
-import { DEFAULT_API_ERROR, DEFAULT_API_ERROR_STATUS } from "@/constants/error.constant";
 import { LOCAL_STORAGE_KEY } from "@/constants/local-storage.constant";
 
 const axiosInstance = axios.create({
@@ -25,31 +24,6 @@ axiosInstance.interceptors.request.use((config) => {
 
   return config;
 });
-
-axiosInstance.interceptors.response.use(
-  response => response,
-  (error) => {
-    const apiError: IApiError = {
-      ...DEFAULT_API_ERROR,
-      message: error.message,
-    };
-
-    if (error.response) {
-      const { status, data } = error.response;
-      apiError.status = status;
-      apiError.message
-        = data?.message
-          ?? DEFAULT_API_ERROR_STATUS[status]?.message
-          ?? error.message;
-      apiError.data = data;
-    }
-    else if (error.code === "ERR_NETWORK") {
-      apiError.message = error.message;
-    }
-
-    return Promise.reject(apiError);
-  },
-);
 
 export class ApiService {
   constructor(protected axiosInstance: AxiosInstance) {}

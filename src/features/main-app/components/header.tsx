@@ -20,6 +20,8 @@ export function HeaderComponent() {
     navigate({ to: "/login" });
   };
 
+  const isLoggedIn = !!user;
+
   return (
     <header className="flex items-center justify-between h-[var(--header-height)] mx-4">
       <Logos.HeaderLogo />
@@ -28,7 +30,7 @@ export function HeaderComponent() {
         content={() => (
           <div className="flex flex-col space">
             <Button type="text" onClick={handleLogout} className="text-left" icon={<LogOutIcon className="size-4" />} iconPosition="end">
-              Logout
+              {isLoggedIn ? "Logout" : "Login"}
             </Button>
           </div>
         )}
@@ -41,7 +43,7 @@ export function HeaderComponent() {
       >
         <div className="flex items-center space-x-2">
           <div className="w-8 h-8 rounded-full bg-gray-300" />
-          <span className="text-sm font-medium">{user?.name || "Not logged in"}</span>
+          <span className="text-sm font-medium">{isLoggedIn ? user?.name : "Not logged in"}</span>
           <ChevronDown className="size-4" />
         </div>
       </Popover>
