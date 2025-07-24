@@ -11,6 +11,7 @@ import { SettingsPage } from "@/features/main-app/pages/settings.page";
 import { UploadPage } from "@/features/main-app/pages/upload.page";
 import { NewScoringSystemPage } from "./pages/new-scoring-system";
 import { requireAuth } from "@/lib/auth-guard";
+import { z } from "zod";
 
 const mainAppRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -23,13 +24,9 @@ const dashboardRoute = createRoute({
   getParentRoute: () => mainAppRoute,
   path: "dashboard",
   component: DashboardPage,
-  validateSearch: (search: {
-    isFromLogin?: boolean;
-  }) => {
-    return {
-      isFromLogin: search.isFromLogin ?? undefined,
-    };
-  },
+  validateSearch: z.object({
+    isFromLogin: z.boolean().optional(),
+  }),
 });
 
 const historyRoute = createRoute({

@@ -20,9 +20,6 @@ export function requireGuest() {
   if (token) {
     throw redirect({
       to: "/dashboard",
-      search: {
-        isFromLogin: false,
-      },
     });
   }
 }

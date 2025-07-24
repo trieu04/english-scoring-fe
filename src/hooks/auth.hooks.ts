@@ -25,7 +25,7 @@ export function useRequireGuest() {
 
   useEffect(() => {
     if (!getUserQuery.isLoading && getUserQuery.data) {
-      navigate({ to: "/dashboard", search: { isFromLogin: false } });
+      navigate({ to: "/dashboard" });
     }
   }, [getUserQuery.isLoading, getUserQuery.data, navigate]);
 

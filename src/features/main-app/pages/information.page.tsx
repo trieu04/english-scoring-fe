@@ -1,4 +1,3 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import readmeImg from "@/assets/img/information/readme.png";
 import newSubmissionImg from "@/assets/img/information/new-submission.png";
@@ -41,7 +40,6 @@ const tabContent: Record<string, { title: string; content: string }> = {
       "Customize your English learning experience in the User Settings. Here, you can set your learning goals (e.g., daily practice time, target CEFR level), adjust notification preferences, and select your preferred English dialect (e.g., American, British).\n\nYou can also manage your profile, track progress milestones, and enable accessibility options for a more personalized journey. The app’s adaptive system adjusts exercises and test difficulty based on your performance and settings.",
   },
 };
-
 
 export function InformationPage() {
   const tabs = [

@@ -23,9 +23,6 @@ export const rootRoute = createRootRoute({
       if (token) {
         throw redirect({
           to: "/dashboard",
-          search: {
-            isFromLogin: false,
-          },
         });
       }
       // If not authenticated, redirect to login

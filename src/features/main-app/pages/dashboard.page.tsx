@@ -11,12 +11,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Spin } from "antd";
 import { HistoryIcon } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 
 export function DashboardPage() {
-  const [scoringSystem, setScoringSystem] = useState();
-  const [task, setTask] = useState();
-  const [dateRange, setDateRange] = useState([null, null]);
+  // const [scoringSystem, setScoringSystem] = useState();
+  // const [task, setTask] = useState();
+  // const [dateRange, setDateRange] = useState([null, null]);
   const listExamSessionQuery = useQuery({
     queryKey: ["/exam-session"],
     queryFn: () => {
@@ -69,7 +69,7 @@ export function DashboardPage() {
         }
       }
     }
-  }, [getDashboardQuery.isSuccess, isFromLogin]);
+  }, [getDashboardQuery, isFromLogin, navigate]);
 
   const barChartData = useMemo(() => {
     if (!getDashboardQuery.data)

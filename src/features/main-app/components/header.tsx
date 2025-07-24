@@ -11,10 +11,6 @@ export function HeaderComponent() {
 
   const [open, setOpen] = useState(false);
 
-  const hide = () => {
-    setOpen(false);
-  };
-
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
   };
