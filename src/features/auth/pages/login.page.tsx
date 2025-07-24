@@ -50,6 +50,7 @@ export function LoginPage() {
     catch (error: any) {
       handleApiError(error, {
         customMessage: "Login failed",
+        skipGlobal: true,
       });
     }
   };

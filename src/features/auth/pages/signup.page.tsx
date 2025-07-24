@@ -49,6 +49,7 @@ export function SignupPage() {
       .catch((error: any) => {
         handleApiError(error, {
           customMessage: "Signup failed",
+          skipGlobal: true,
         });
       });
 
