@@ -1,51 +1,69 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Select, DatePicker } from "antd";
-import { useState } from "react";
+import { Select, DatePicker, Spin } from "antd";
+import { useMemo, useState } from "react";
 import Icons from "@/components/icons";
 import Illustrations from "@/components/illustrations";
 import { Pane } from "@/components/ui/pane";
 import { Pane2 } from "@/components/ui/pane2";
 import { HistoryIcon } from "lucide-react";
 import { Link } from "@/components/ui/link";
-
-const scoringSystems = [
-  { key: "vstep", label: "Vstep", color: "bg-sky-200", icon: <Icons.ExamMultipleChoiceIcon className="w-6 h-6 text-sky-700" /> },
-  { key: "ielts", label: "IELTS", color: "bg-red-200", icon: <Icons.IeltsIcon className="w-6 h-6 text-red-700" /> },
-  { key: "aptis", label: "Aptis", color: "bg-green-200", icon: <Icons.BookOpenIcon className="w-6 h-6 text-green-700" /> },
-  { key: "other", label: "Other", color: "bg-indigo-200", icon: <Icons.FileTextIcon className="w-6 h-6 text-indigo-700" /> },
-];
-
-const scoringSystemCounts = {
-  vstep: 600,
-  ielts: 600,
-  aptis: 600,
-  other: 600,
-};
-
-const submissionsCount = 1247;
-
-const barChartData = {
-  scores: [9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5, 4, 3.5, 3, 2.5, 2, 1.5, 1, 0.5, 0],
-  frequencies: [280, 95, 120, 98, 170, 50, 220, 70, 210, 370, 170, 220, 370, 170, 220, 170, 150, 80, 50, 20],
-};
-
-const historySubmissions = [
-  { id: 1, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 2, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-  { id: 3, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 4, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-  { id: 5, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 6, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-  { id: 7, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 8, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-  { id: 9, name: "Nguyễn Đức Lộc", time: "12:23", date: "04/12/2024" },
-  { id: 10, name: "Kip 2, 09/10/2024", time: "12:23", date: "04/12/2024" },
-];
+import { PaginatedResult } from "@/types/interfaces/pagination";
+import { useQuery } from "@tanstack/react-query";
+import { apiService } from "@/services/api.service";
+import { BarChart } from "@mui/x-charts/BarChart";
 
 export function DashboardPage() {
   const [scoringSystem, setScoringSystem] = useState();
   const [task, setTask] = useState();
   const [dateRange, setDateRange] = useState([null, null]);
+  const listExamSessionQuery = useQuery({
+    queryKey: ["/exam-session"],
+    queryFn: () => {
+      return apiService.get<PaginatedResult<{
+        id: string;
+        no: number;
+        createdAt: string;
+        updatedAt: string;
+        userId: string | null;
+        name: string;
+        description: string;
+        scoringSystemName: string;
+      }>>(`/exam-session`, {
+        params: {
+          limit: 10,
+          page: 1,
+        },
+      });
+    },
+  });
+
+  const getDashboardQuery = useQuery({
+    queryKey: ["/dashboard"],
+    queryFn: () => {
+      return apiService.get<{
+        submissionCount: number;
+        submissionCountByScoringSystem: {
+          scoringSystemId: string;
+          scoringSystemName: string;
+          submissionCount: number;
+        }[];
+        overallDistributionOfAllSubmissions: {
+          overall: string;
+          count: string;
+        }[];
+      }>("/dashboard");
+    },
+  });
+
+  const barChartData = useMemo(() => {
+    if (!getDashboardQuery.data)
+      return { scores: [], frequencies: [] };
+
+    const scores = getDashboardQuery.data.overallDistributionOfAllSubmissions.map(item => Number.parseFloat(item.overall));
+    const frequencies = getDashboardQuery.data.overallDistributionOfAllSubmissions.map(item => Number(item.count));
+
+    return { scores, frequencies };
+  }, [getDashboardQuery.data]);
 
   return (
     <div className="grid grid-cols-6 gap-4 px-4">
@@ -59,7 +77,7 @@ export function DashboardPage() {
               </div>
               <div>
                 <div className="text-base opacity-80">Submissions</div>
-                <div className="text-4xl font-bold">{submissionsCount}</div>
+                <div className="text-4xl font-bold">{getDashboardQuery.data?.submissionCount || "-"}</div>
               </div>
             </div>
           </Card>
@@ -72,15 +90,34 @@ export function DashboardPage() {
               </CardHeader>
               <CardContent className="pt-0 pb-4">
                 <div className="flex flex-col gap-4">
-                  {scoringSystems.map(sys => (
-                    <div key={sys.key} className={`flex items-center justify-between rounded-lg px-3 py-2 ${sys.color}`}>
-                      <div className="flex items-center gap-2">
-                        {sys.icon}
-                        <span className="font-semibold text-base">{sys.label}</span>
+                  {getDashboardQuery.data?.submissionCountByScoringSystem.map((sys) => {
+                    let colorClass = "bg-gray-200";
+                    let icon = <Icons.FileTextIcon className="w-6 h-6 text-indigo-700" />;
+                    switch (sys.scoringSystemName.toLowerCase()) {
+                      case "vstep":
+                        colorClass = "bg-sky-200";
+                        icon = <Icons.ExamMultipleChoiceIcon className="w-6 h-6 text-sky-700" />;
+                        break;
+                      case "ielts":
+                        colorClass = "bg-red-200";
+                        icon = <Icons.IeltsIcon className="w-6 h-6 text-red-700" />;
+                        break;
+                      case "aptis":
+                        colorClass = "bg-green-200";
+                        icon = <Icons.BookOpenIcon className="w-6 h-6 text-green-700" />;
+                        break;
+                    }
+
+                    return (
+                      <div key={sys.scoringSystemId} className={`flex items-center justify-between rounded-lg px-3 py-2 ${colorClass}`}>
+                        <div className="flex items-center gap-2">
+                          {icon}
+                          <span className="font-semibold text-base">{sys.scoringSystemName}</span>
+                        </div>
+                        <span className="font-bold text-lg">{sys.submissionCount}</span>
                       </div>
-                      <span className="font-bold text-lg">{scoringSystemCounts[sys.key as "vstep" | "ielts" | "aptis" | "other"]}</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
@@ -90,18 +127,18 @@ export function DashboardPage() {
                 <CardTitle className="text-base">Scoring distribution all submissions</CardTitle>
               </CardHeader>
               <CardContent className="pt-0 pb-4">
-                {/* <BarChart
-                xAxis={[{ data: barChartData.scores, label: "Score" }]}
-                series={[{ data: barChartData.frequencies, label: "Frequency" }]}
-                height={220}
-                colors={["#3881A2"]}
-                grid={{ horizontal: true }}
-              /> */}
+                <BarChart
+                  xAxis={[{ data: barChartData.scores, label: "Score" }]}
+                  series={[{ data: barChartData.frequencies, label: "Frequency" }]}
+                  height={220}
+                  colors={["#3881A2"]}
+                  grid={{ horizontal: true }}
+                />
               </CardContent>
             </Card>
           </div>
           {/* Bottom: Scoring filter */}
-          <Card className="p-6">
+          {/* <Card className="p-6">
             <div className="flex flex-wrap gap-4 items-center">
               <div className="flex flex-col min-w-[180px]">
                 <span className="mb-1 text-sm text-gray-500">Scoring System</span>
@@ -146,7 +183,7 @@ export function DashboardPage() {
                 />
               </div>
             </div>
-          </Card>
+          </Card> */}
         </div>
       </Pane>
       {/* Right: History */}
@@ -157,24 +194,24 @@ export function DashboardPage() {
               <HistoryIcon />
               <span>History</span>
             </h2>
-            <Link to="/dashboard" className="px-0">Detail</Link>
+            <Link to="/history" className="px-0">Detail</Link>
           </div>
         )}
         className="mx-0 col-span-2"
       >
         <div className="flex flex-col">
-          {historySubmissions.map((item, idx) => (
+          {listExamSessionQuery.isLoading && <Spin />}
+          {listExamSessionQuery.data && listExamSessionQuery.data.data.map((item, idx) => (
             <div key={`${item.id}-${idx}`} className="flex items-center justify-between py-2">
               <div className="flex items-center gap-2">
                 <Icons.ExamMultipleChoiceIcon className="w-5 h-5 text-[#3881A2]" />
-                <span className="font-medium text-sm">{item.name}</span>
+                <span className="font-medium text-sm">{item.name || `Test ${idx + 1}`}</span>
               </div>
               <div className="flex flex-col items-end text-xs text-gray-400">
                 <span>
-                  @
-                  {item.time}
+                  {new Date(item.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </span>
-                <span>{item.date}</span>
+                <span>{new Date(item.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
           ))}
