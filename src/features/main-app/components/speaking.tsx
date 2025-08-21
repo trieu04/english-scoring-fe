@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { setFullHeightFromTop } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Spin, Tabs } from "antd";
+import { Alert, notification, Spin, Tabs } from "antd";
 import { cx } from "class-variance-authority";
 import { BoldIcon, BookOpenIcon, ClockIcon, FileTextIcon, MessageCircleIcon, MicIcon, RotateCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import Markdown from "react-markdown";
 import { AudioPlayer } from "./audio-player";
 import { OverallPoint } from "./overall-point";
 import { SkillPoint } from "./skill-point";
+import { handleApiError } from "@/lib/error-handle";
 
 interface IComponentProps {
   examId?: string;
@@ -52,8 +53,17 @@ export function SpeakingComponent({ examId }: IComponentProps) {
 
   const handleReScore = async () => {
     setIsScoring(true);
-    await apiService.post(`/exam/${examId}/score-speaking`);
-    await getSpeakingSubmissionQuery.refetch();
+    try {
+      await apiService.post(`/exam/${examId}/score-speaking`);
+      await getSpeakingSubmissionQuery.refetch();
+    }
+    catch (error) {
+      handleApiError(error);
+      notification.error({
+        message: "Error",
+        description: "Failed to rescore speaking submissions.",
+      });
+    }
     setIsScoring(false);
   };
 
@@ -144,7 +154,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
 
                 return {
                   key: item.id,
-                  label: <b>{`Task ${item.taskNumber}`}</b>,
+                  label: <b>{`Part ${item.taskNumber}`}</b>,
                   children: (
                     <>
                       <div>

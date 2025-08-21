@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
 
   const getUserQuery = useQuery<IUser | null>({
-    queryKey: ["auth", "user"],
+    queryKey: ["/auth/me"],
     queryFn: async () => {
       const storedToken = localStorage.getItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
       if (!storedToken)
@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logoutMutation = useMutation({
     mutationFn: async () => {
       localStorage.removeItem(LOCAL_STORAGE_KEY.ACCESS_TOKEN);
-      queryClient.setQueryData(["auth", "user"], null);
+      queryClient.setQueryData(["/auth/me"], null);
     },
   });
 

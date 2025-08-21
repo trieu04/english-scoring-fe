@@ -6,7 +6,7 @@ import { Pane } from "@/components/ui/pane";
 import { Pane2 } from "@/components/ui/pane2";
 import { apiService } from "@/services/api.service";
 import { PaginatedResult } from "@/types/interfaces/pagination";
-import { BarChart } from "@mui/x-charts/BarChart";
+import { BarChart, BarSeries } from "@mui/x-charts/BarChart";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Spin } from "antd";
@@ -52,6 +52,14 @@ export function DashboardPage() {
           overall: string;
           count: string;
         }[];
+        writingOverallDistribution: {
+          overall: string;
+          count: string;
+        }[];
+        speakingOverallDistribution: {
+          overall: string;
+          count: string;
+        }[];
       }>("/dashboard");
     },
   });
@@ -73,12 +81,38 @@ export function DashboardPage() {
 
   const barChartData = useMemo(() => {
     if (!getDashboardQuery.data)
-      return { scores: [], frequencies: [] };
+      return { xAxis: [], series: [] };
 
-    const scores = getDashboardQuery.data.overallDistributionOfAllSubmissions.map(item => Number.parseFloat(item.overall));
-    const frequencies = getDashboardQuery.data.overallDistributionOfAllSubmissions.map(item => Number(item.count));
+    const speaking = getDashboardQuery.data.speakingOverallDistribution;
+    const writing = getDashboardQuery.data.writingOverallDistribution;
 
-    return { scores, frequencies };
+    // Gộp tất cả các giá trị overall lại làm trục x
+    const allOveralls = Array.from(
+      new Set([...speaking, ...writing].map(item => Number.parseFloat(item.overall))),
+    ).sort((a, b) => a - b);
+
+    const xAxis = [{ data: allOveralls.map(String), label: "Overall" }];
+
+    const series: BarSeries[] = [
+      {
+        label: "Speaking",
+        color: "#3881A2",
+        data: allOveralls.map((overall) => {
+          const found = speaking.find(item => Number.parseFloat(item.overall) === overall);
+          return found ? Number(found.count) : 0;
+        }),
+      },
+      {
+        label: "Writing",
+        color: "#FF8C00",
+        data: allOveralls.map((overall) => {
+          const found = writing.find(item => Number.parseFloat(item.overall) === overall);
+          return found ? Number(found.count) : 0;
+        }),
+      },
+    ];
+
+    return { xAxis, series };
   }, [getDashboardQuery.data]);
 
   return (
@@ -144,8 +178,8 @@ export function DashboardPage() {
               </CardHeader>
               <CardContent className="pt-0 pb-4">
                 <BarChart
-                  xAxis={[{ data: barChartData.scores, label: "Score" }]}
-                  series={[{ data: barChartData.frequencies, label: "Frequency" }]}
+                  xAxis={barChartData.xAxis}
+                  series={barChartData.series}
                   height={220}
                   colors={["#3881A2"]}
                   grid={{ horizontal: true }}

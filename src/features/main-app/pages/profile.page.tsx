@@ -1,9 +1,70 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/features/auth/context";
+import { apiService } from "@/services/api.service";
+import { useQueryClient } from "@tanstack/react-query";
+import { notification } from "antd";
+import { useEffect, useState } from "react";
 
 export function DashboardProfilePage() {
-  const auth = useAuth();
+  const { getUserQuery: { data: user } } = useAuth();
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    username: "",
+    role: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        username: user.username || "",
+        role: user.roles.join(", ") || "",
+      });
+    }
+  }, [user]);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSave = async () => {
+    setIsLoading(true);
+    try {
+      await apiService.patch("/auth/me", {
+        name: formData.name,
+        username: formData.username,
+      });
+      notification.success({
+        message: "Profile updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/auth/me"] });
+    }
+    catch (error) {
+      console.error("Failed to update profile:", error);
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      name: user?.name || "",
+      email: user?.email || "",
+      username: user?.username || "",
+      role: user?.roles.join(", ") || "",
+    });
+  };
+
+  const needUpdate = user?.username !== formData.username || user?.name !== formData.name;
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md mx-4">
@@ -25,11 +86,11 @@ export function DashboardProfilePage() {
               <Input
                 type="text"
                 id="name"
+                name="name"
                 className="pl-10"
                 placeholder="Enter your name"
-                value={auth.getUserQuery.data?.name || ""}
-                readOnly
-                defaultValue="nguyenthia"
+                value={formData.name}
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -48,17 +109,19 @@ export function DashboardProfilePage() {
               <Input
                 type="email"
                 id="email"
+                name="email"
                 className="pl-10"
                 placeholder="Enter your email"
-                value={auth.getUserQuery.data?.email || ""}
+                value={formData.email}
+                onChange={handleInputChange}
                 readOnly
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-              Phone number
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+              Username
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
@@ -68,11 +131,12 @@ export function DashboardProfilePage() {
               </div>
               <Input
                 type="tel"
-                id="phone"
+                id="username"
+                name="username"
                 className="pl-10"
-                placeholder="Enter your phone number"
-                value=""
-                readOnly
+                placeholder="Enter your username"
+                value={formData.username}
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -90,9 +154,10 @@ export function DashboardProfilePage() {
               <Input
                 type="text"
                 id="role"
+                name="role"
                 className="pl-10"
                 defaultValue="Admin"
-                value={auth.getUserQuery.data?.roles.join(", ") || ""}
+                value={formData.role}
                 readOnly
               />
             </div>
@@ -100,12 +165,16 @@ export function DashboardProfilePage() {
 
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
             <Button
-              type="button"
               className="px-4 py-2 rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition"
+              onClick={handleCancel}
+              disabled={needUpdate}
             >
               Cancel
             </Button>
-            <Button disabled>
+            <Button
+              onClick={handleSave}
+              disabled={!needUpdate || isLoading}
+            >
               Save
             </Button>
           </div>

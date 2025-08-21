@@ -5,7 +5,7 @@ import { setFullHeightFromTop } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { Tabs } from "antd";
+import { notification, Tabs } from "antd";
 import clsx from "clsx";
 import { TrashIcon, UploadIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -336,12 +336,53 @@ function FileScoring() {
 }
 
 function BatchScoring() {
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const { scoringSystem } = useSearch({ from: "/main-app/upload" });
+  const navigate = useNavigate();
+
+  const handleUpload = async () => {
+    if (!file) {
+      return;
+    }
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("scoringSystemId", scoringSystem as string);
+
+      const response = await apiService.post<{
+        examSession: { id: string };
+        exams: { id: string }[];
+      }>("/exam-session/upload-zip", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      navigate({
+        to: "/scoring",
+        search: {
+          examSessionId: response.examSession.id,
+          examId: response.exams[0]?.id,
+        },
+      });
+    }
+    catch (error) {
+      console.error("Upload failed:", error);
+      notification.error({
+        message: "Upload failed",
+        description: "An error occurred while uploading the file.",
+      });
+    }
+    finally {
+      setUploading(false);
+    }
+  };
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       const file = acceptedFiles[0];
-      setFileName(file.name);
+      setFile(file);
 
       // Handle file upload logic here
       const reader = new FileReader();
@@ -385,13 +426,17 @@ function BatchScoring() {
           </Button>
         </div>
 
-        {fileName && (
+        {file && (
           <p className="mt-4 text-sm text-gray-700">
             Selected file:
             {" "}
-            <strong>{fileName}</strong>
+            <strong>{file.name}</strong>
           </p>
         )}
+
+        <Button onClick={handleUpload} className="mt-4" disabled={!file || uploading}>
+          Upload
+        </Button>
       </div>
     </div>
   );

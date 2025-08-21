@@ -66,7 +66,7 @@ function TasksRow({
               getTaskBgColorClass(idx),
             )}
           >
-            <div className={clsx("text-base font-semibold", getTaskTextColorClass(idx))}>{`Task ${idx}`}</div>
+            <div className={clsx("text-base font-semibold", getTaskTextColorClass(idx))}>{`Task ${idx + 1}`}</div>
             <div className="mt-2">
               <Input
                 type="number"
