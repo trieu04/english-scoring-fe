@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { setFullHeightFromTop } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
 import { useQuery } from "@tanstack/react-query";
-import { Alert, notification, Spin, Tabs } from "antd";
+import { Alert, Spin, Tabs } from "antd";
 import { cx } from "class-variance-authority";
 import { BoldIcon, BookOpenIcon, LayersIcon, RotateCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";

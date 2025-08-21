@@ -1,13 +1,12 @@
-import Icons from "@/components/icons";
 import Illustrations from "@/components/illustrations";
 import { Button } from "@/components/ui/button";
 import { setFullHeightFromTop } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { notification, Tabs } from "antd";
+import { notification, Spin, Tabs } from "antd";
 import clsx from "clsx";
-import { TrashIcon, UploadIcon } from "lucide-react";
+import { TrashIcon, UploadCloudIcon, UploadIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -338,6 +337,8 @@ function FileScoring() {
 function BatchScoring() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadPercent, setUploadPercent] = useState(0);
+
   const { scoringSystem } = useSearch({ from: "/main-app/upload" });
   const navigate = useNavigate();
 
@@ -357,6 +358,12 @@ function BatchScoring() {
       }>("/exam-session/upload-zip", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
+        },
+        onUploadProgress: (progressEvent) => {
+          if (progressEvent.total) {
+            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadPercent(percent);
+          }
         },
       });
       navigate({
@@ -412,29 +419,44 @@ function BatchScoring() {
       >
         <input {...getInputProps()} />
         <div className="flex justify-center">
-          <Icons.UploadCloudIcon className="text-4xl text-teal-600 mb-2" />
+          <UploadCloudIcon className="text-4xl text-teal-600 mb-2" />
         </div>
-        <p className="text-teal-700 font-semibold">Upload source</p>
-        <p className="text-gray-600">Choose a file or Drag and drop it here</p>
-
-        <div className="mt-4">
-          <Button
-            size="lg"
-            onClick={open}
-          >
-            Browse
-          </Button>
-        </div>
+        {uploading && (
+          <Spin percent={uploadPercent} size="large" />
+        )}
+        {file === null && (
+          <>
+            <p className="text-teal-700 font-semibold">Upload source</p>
+            <p className="text-gray-600">Choose a file or Drag and drop it here</p>
+            <div className="mt-4">
+              <Button
+                size="lg"
+                onClick={open}
+              >
+                Browse
+              </Button>
+            </div>
+          </>
+        )}
 
         {file && (
           <p className="mt-4 text-sm text-gray-700">
             Selected file:
             {" "}
             <strong>{file.name}</strong>
+            {" "}
+            <XIcon className="cursor-pointer text-red-400 inline" onClick={() => setFile(null)} />
           </p>
         )}
+      </div>
 
-        <Button onClick={handleUpload} className="mt-4" disabled={!file || uploading}>
+      <div className="p-8 flex justify-end mb-4">
+        <Button
+          className=""
+          size="lg"
+          disabled={!file || uploading}
+          onClick={handleUpload}
+        >
           Upload
         </Button>
       </div>
