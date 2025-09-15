@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { notification, Spin, Tabs } from "antd";
 import clsx from "clsx";
-import { TrashIcon, UploadCloudIcon, UploadIcon, XIcon } from "lucide-react";
+import { FileIcon, FileUpIcon, FolderOpen, TrashIcon, UploadCloudIcon, UploadIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
@@ -158,13 +158,14 @@ function FileScoring() {
     tasks.map(task => (
       <div
         key={task.taskType + task.no}
-        className={`border-1 rounded-xl p-4 mb-6 min-h-90 ${section === "writing" ? "border-[#3881A2]" : "border-[#FF9500]"
+        className={`border-1 rounded-xl p-4 mb-6 ${section === "writing" ? "border-[#3881A2]" : "border-[#FF9500]"
         }`}
       >
         <div className="flex justify-between items-center mb-2">
           <h3 className="text-lg font-semibold">
-            Task
-            {" "}
+            {section === "writing" && "Task"}
+            {section === "speaking" && "Part"}
+            &nbsp;
             {task.no}
           </h3>
         </div>
@@ -228,8 +229,11 @@ function FileScoring() {
             id={`upload-question-${task.taskType}-${task.no}`}
           />
         </div>
-        <p className="mb-2">Answer</p>
-        <div className="mb-4 p-3 bg-white rounded-lg flex items-center justify-center border border-gray-300">
+        <p className="mb-2">
+          {section === "writing" && "Answer"}
+          {section === "speaking" && "Your Recording"}
+        </p>
+        <div className="p-3 min-h-24 bg-white rounded-lg flex items-center justify-center border border-gray-300">
           {task.answerFile
             ? (
                 <>
@@ -272,14 +276,14 @@ function FileScoring() {
                             setRefresh(prev => prev + 1);
                           }}
                         />
-                        <label htmlFor={`upload-answer-${task.taskType}-${task.no}`} className="cursor-pointer p-4 flex items-center">
+                        <label htmlFor={`upload-answer-${task.taskType}-${task.no}`} className="cursor-pointer py-6 px-4 flex items-center">
                           <UploadIcon />
                         </label>
                       </>
                     )}
                   {task.taskType === "speaking"
                     && (
-                      <label htmlFor={`upload-answer-${task.taskType}-${task.no}`} className="cursor-pointer p-4 flex items-center justify-center">
+                      <label htmlFor={`upload-answer-${task.taskType}-${task.no}`} className="cursor-pointer py-6 px-4 flex items-center justify-center">
                         <UploadIcon />
                       </label>
                     )}
@@ -413,7 +417,7 @@ function BatchScoring() {
       <div
         {...getRootProps()}
         className={clsx(
-          "border-2 border-dashed border-teal-600 rounded-xl p-10 text-center bg-blue-50 max-w-xl mx-auto",
+          "border-2 border-dashed border-teal-600 rounded-xl p-10 text-center bg-blue-50 max-w-6xl mx-auto",
           isDragActive && "bg-blue-100",
         )}
       >
@@ -424,15 +428,17 @@ function BatchScoring() {
         {uploading && (
           <Spin percent={uploadPercent} size="large" />
         )}
+        <p className="text-teal-700 font-semibold mb-4">Upload source</p>
         {file === null && (
           <>
-            <p className="text-teal-700 font-semibold">Upload source</p>
             <p className="text-gray-600">Choose a file or Drag and drop it here</p>
             <div className="mt-4">
               <Button
                 size="lg"
                 onClick={open}
+                variant="link"
               >
+                <FolderOpen />
                 Browse
               </Button>
             </div>
@@ -440,25 +446,100 @@ function BatchScoring() {
         )}
 
         {file && (
-          <p className="mt-4 text-sm text-gray-700">
-            Selected file:
-            {" "}
-            <strong>{file.name}</strong>
-            {" "}
-            <XIcon className="cursor-pointer text-red-400 inline" onClick={() => setFile(null)} />
-          </p>
+          <div>
+            <p className="text-sm text-gray-700">
+              Selected file:
+              {" "}
+              <strong>{file.name}</strong>
+              {" "}
+              <XIcon className="cursor-pointer text-red-400 inline" onClick={() => setFile(null)} />
+            </p>
+            <Button
+              className="mt-4"
+              size="lg"
+              disabled={!file || uploading}
+              onClick={handleUpload}
+            >
+              <FileUpIcon />
+              Upload
+            </Button>
+          </div>
         )}
       </div>
-
-      <div className="p-8 flex justify-end mb-4">
-        <Button
-          className=""
-          size="lg"
-          disabled={!file || uploading}
-          onClick={handleUpload}
-        >
-          Upload
-        </Button>
+      <div className="mt-8 max-w-6xl mx-auto">
+        <div className="border rounded-lg p-6">
+          <h3 className="text-lg font-normal mb-4 flex items-center">
+            <FileIcon className="mr-2" />
+            ZIP File Structure Instructions
+          </h3>
+          <div className="text-sm  space-y-4">
+            <p className="font-medium">Please organize your ZIP file with the following structure:</p>
+            <div className="bg-white border border-main rounded p-4 font-mono text-xs overflow-x-auto">
+              <div className="whitespace-pre">
+                {`file-name.zip
+├── student-name-1/
+│   ├── speaking/
+│   │   ├── part 1.mp3
+│   │   ├── part 2.mp3
+│   │   └── part 3.mp3
+│   └── writing/
+│       ├── task 1.docx
+│       ├── task 2.docx
+│       └── task 3.docx
+├── student-name-2/
+│   ├── speaking/
+│   │   ├── part 1.mp3
+│   │   ├── part 2.mp3
+│   │   └── part 3.mp3
+│   └── writing/
+│       ├── task 1.docx
+│       ├── task 2.docx
+│       └── task 3.docx
+└── student-name-3/
+    ├── speaking/
+    │   ├── part 1.mp3
+    │   ├── part 2.mp3
+    │   └── part 3.mp3
+    └── writing/
+        ├── task 1.docx
+        ├── task 2.docx
+        └── task 3.docx`}
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-medium ">Important Notes:</h4>
+              <ul className="list-disc list-inside space-y-1 ">
+                <li>Each student should have their own folder named with their full name</li>
+                <li>
+                  Each student folder must contain exactly two subfolders:
+                  <code className="bg-blue-100 px-1 rounded">speaking</code>
+                  {" "}
+                  and
+                  <code className="bg-blue-100 px-1 rounded">writing</code>
+                </li>
+                <li>
+                  Speaking files should be named as:
+                  <code className="bg-blue-100 px-1 rounded">part 1.mp3</code>
+                  ,
+                  <code className="bg-blue-100 px-1 rounded">part 2.mp3</code>
+                  ,
+                  <code className="bg-blue-100 px-1 rounded">part 3.mp3</code>
+                </li>
+                <li>
+                  Writing files should be named as:
+                  <code className="bg-blue-100 px-1 rounded">task 1.docx</code>
+                  ,
+                  <code className="bg-blue-100 px-1 rounded">task 2.docx</code>
+                  ,
+                  <code className="bg-blue-100 px-1 rounded">task 3.docx</code>
+                </li>
+                <li>File names are case-sensitive and must match exactly as shown</li>
+                <li>Supported audio formats: .mp3, .wav, .m4a</li>
+                <li>Supported document formats: .docx, .doc, .pdf, .txt</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
