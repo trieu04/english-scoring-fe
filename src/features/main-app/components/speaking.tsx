@@ -101,6 +101,44 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     );
   }
 
+  const speakingParts = [] as { taskNumber: number; url: string }[];
+  const resultVersions = [] as { version: number; createdAt: string }[];
+  const sumResults = {
+    overall: 0,
+    pronunciation: 0,
+    organization: 0,
+    fluency: 0,
+    count: 0,
+  };
+  getSpeakingSubmissionQuery.data?.forEach((item) => {
+    speakingParts.push({
+      taskNumber: item.taskNumber,
+      url: item.answerFileUrl,
+    });
+    item.speakingResults.forEach((result) => {
+      if (!resultVersions.some(r => r.version === result.version)) {
+        resultVersions.push({ version: result.version, createdAt: result.createdAt });
+      }
+    });
+    const sv = item.speakingResults.find(r => r.version === currentVersion);
+    if (sv) {
+      sumResults.overall += Number(sv.overall) || 0;
+      sumResults.pronunciation += Number(sv.pronunciation) || 0;
+      sumResults.organization += Number(sv.organization) || 0;
+      sumResults.fluency += Number(sv.fluency) || 0;
+      sumResults.count += 1;
+    }
+  });
+  const scores = {
+    overall: sumResults.overall / sumResults.count || 0,
+    pronunciation: sumResults.pronunciation / sumResults.count || 0,
+    organization: sumResults.organization / sumResults.count || 0,
+    fluency: sumResults.fluency / sumResults.count || 0,
+    vocabulary: "-",
+    grammar: "-",
+    content: "-",
+  };
+
   return (
     <div className="bg-white rounded-lg">
       <div className="pl-4 pt-2 pb-2 pr-2 flex items-center  border-b-2 border-b-gray-200">
@@ -131,110 +169,68 @@ export function SpeakingComponent({ examId }: IComponentProps) {
               </div>
             )}
 
-            <Tabs
-              defaultActiveKey="1"
-              items={getSpeakingSubmissionQuery.data?.map((item) => {
-                const scores = {
-                  overall: "-",
-                  pronunciation: "-",
-                  organization: "-",
-                  vocabulary: "-",
-                  grammar: "-",
-                  fluency: "-",
-                  content: "-",
-                  explanation: "",
-                };
+            <>
+              <h3>Submission</h3>
+              {
+                speakingParts.map(part => (
+                  <div key={part.taskNumber}>
+                    <div className="mt-3 ">
+                      <AudioPlayer url={part.url} name={`Part ${part.taskNumber}`} />
+                    </div>
+                  </div>
+                ))
+              }
 
-                if (Array.isArray(item.speakingResults)) {
-                  const sv = item.speakingResults.find(s => s.version === currentVersion);
-                  if (sv) {
-                    Object.assign(scores, sv);
-                  }
-                }
+              <div className="py-4">
 
-                return {
-                  key: item.id,
-                  label: <b>{`Part ${item.taskNumber}`}</b>,
-                  children: (
-                    <>
-                      <div>
-                        <h3>Submission</h3>
-                        <div className="mt-3 ">
-                          <AudioPlayer url={item.answerFileUrl} />
-                        </div>
-                      </div>
-                      <div className="py-4">
-
-                        <h3>Score</h3>
-                        <div className="mt-3 pt-4 border-1 border-main rounded-md justify-items-center grid grid-cols-2 gap-0 space-y-8">
-                          <>
-                            <OverallPoint point={scores.overall} />
-                            <SkillPoint icon={<MicIcon className="text-main" />} name="Pronunciation" point={scores.pronunciation} />
-                            <SkillPoint icon={<BoldIcon className="text-main" />} name="Vocabulary" point={scores.vocabulary} />
-                            <SkillPoint icon={<BookOpenIcon className="text-main" />} name="Grammar" point={scores.grammar} />
-                            <SkillPoint icon={<MessageCircleIcon className="text-main" />} name="Fluency" point={scores.fluency} />
-                            <SkillPoint icon={<FileTextIcon className="text-main" />} name="Content" point={scores.content} />
-                          </>
-                        </div>
-                      </div>
-                      {scores.explanation && (
-                        <div className="py-4">
-                          <h3>Explaination</h3>
-                          <div className="mt-3 p-4 rounded-md border border-grey1">
-                            <div className="overflow-y-auto max-h-[40vh] pr-2 prose max-w-full text-md">
-                              <Markdown components={{
-                                p: ({ node, ...props }) => <p className="" {...props} />,
-                                h2: ({ node, ...props }) => <h2 className="text-main" {...props} />,
-                                h3: ({ node, ...props }) => <h3 className="text-main" {...props} />,
-                                h4: ({ node, ...props }) => <h4 className="text-main" {...props} />,
-                                li: ({ node, ...props }) => <li className="" {...props} />,
-                              }}
-                              >
-                                {scores.explanation}
-                              </Markdown>
-                            </div>
-                          </div>
-                        </div>
+                <h3>Score</h3>
+                <div className="mt-3 pt-4 pb-4 border-1 border-main rounded-md justify-items-center grid grid-cols-2 gap-0 space-y-8">
+                  <>
+                    <OverallPoint point={scores.overall} />
+                    <SkillPoint icon={<MicIcon className="text-main" />} name="Pronunciation" point={scores.pronunciation} />
+                    <SkillPoint icon={<MessageCircleIcon className="text-main" />} name="Fluency" point={scores.fluency} />
+                    {/* <SkillPoint icon={<BoldIcon className="text-main" />} name="Vocabulary" point={scores.vocabulary} />
+                    <SkillPoint icon={<BookOpenIcon className="text-main" />} name="Grammar" point={scores.grammar} />
+                    <SkillPoint icon={<FileTextIcon className="text-main" />} name="Content" point={scores.content} /> */}
+                  </>
+                </div>
+              </div>
+              <div className="py-4">
+                <div className="flex items-center">
+                  <h3 className="grow-1">Score version</h3>
+                </div>
+                <div className="mt-3">
+                  {resultVersions.map((version, idx) => (
+                    <div
+                      className={cx(
+                        "mt-2 flex space-x-2 border-1 border-gray-200 p-4 rounded-md items-center",
+                        version.version === currentVersion && "bg-second",
                       )}
-                      <div className="py-4">
-                        <div className="flex items-center">
-                          <h3 className="grow-1">Score version</h3>
-                        </div>
-                        <div className="mt-3">
-                          {item.speakingResults.map(result => (
-                            <div
-                              className={cx(
-                                "mt-2 flex space-x-2 border-1 border-gray-200 p-4 rounded-md items-center",
-                                result.version === currentVersion && "bg-second",
-                              )}
-                              key={item.id}
-                            >
-                              <div
-                                className="text-main font-bold grow cursor-pointer"
-                                onClick={() => {
-                                  setCurrentVersion(result.version);
-                                }}
-                              >
-                                Version
-                                {" "}
-                                {result.version}
-                              </div>
-                              <ClockIcon />
-                              <div className="flex items-center">
-                                <span>{new Date(result.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                                <span>{new Date(result.createdAt).toLocaleDateString()}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        <div>
-                        </div>
+                      key={idx}
+                    >
+                      <div
+                        className="text-main font-bold grow cursor-pointer"
+                        onClick={() => {
+                          setCurrentVersion(version.version);
+                        }}
+                      >
+                        Version
+                        &nbsp;
+                        {version.version}
                       </div>
-                    </>
-                  ),
-                };
-              })}
-            />
+                      <ClockIcon />
+                      <div className="flex items-center">
+                        <span>{new Date(version.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                        &nbsp;
+                        <span>{new Date(version.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                </div>
+              </div>
+            </>
           </>
         )}
 
