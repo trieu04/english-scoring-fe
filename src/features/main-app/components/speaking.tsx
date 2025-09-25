@@ -106,8 +106,10 @@ export function SpeakingComponent({ examId }: IComponentProps) {
   const sumResults = {
     overall: 0,
     pronunciation: 0,
-    organization: 0,
     fluency: 0,
+    vocabulary: 0,
+    grammar: 0,
+    content: 0,
     count: 0,
   };
   getSpeakingSubmissionQuery.data?.forEach((item) => {
@@ -124,19 +126,20 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     if (sv) {
       sumResults.overall += Number(sv.overall) || 0;
       sumResults.pronunciation += Number(sv.pronunciation) || 0;
-      sumResults.organization += Number(sv.organization) || 0;
       sumResults.fluency += Number(sv.fluency) || 0;
+      sumResults.vocabulary += Number(sv.vocabulary) || 0;
+      sumResults.grammar += Number(sv.grammar) || 0;
+      sumResults.content += Number(sv.content) || 0;
       sumResults.count += 1;
     }
   });
   const scores = {
     overall: sumResults.overall / sumResults.count || 0,
     pronunciation: sumResults.pronunciation / sumResults.count || 0,
-    organization: sumResults.organization / sumResults.count || 0,
     fluency: sumResults.fluency / sumResults.count || 0,
-    vocabulary: "-",
-    grammar: "-",
-    content: "-",
+    vocabulary: sumResults.vocabulary / sumResults.count || 0,
+    grammar: sumResults.grammar / sumResults.count || 0,
+    content: sumResults.content / sumResults.count || 0,
   };
 
   return (
@@ -189,9 +192,9 @@ export function SpeakingComponent({ examId }: IComponentProps) {
                     <OverallPoint point={scores.overall} />
                     <SkillPoint icon={<MicIcon className="text-main" />} name="Pronunciation" point={scores.pronunciation} />
                     <SkillPoint icon={<MessageCircleIcon className="text-main" />} name="Fluency" point={scores.fluency} />
-                    {/* <SkillPoint icon={<BoldIcon className="text-main" />} name="Vocabulary" point={scores.vocabulary} />
+                    <SkillPoint icon={<BoldIcon className="text-main" />} name="Vocabulary" point={scores.vocabulary} />
                     <SkillPoint icon={<BookOpenIcon className="text-main" />} name="Grammar" point={scores.grammar} />
-                    <SkillPoint icon={<FileTextIcon className="text-main" />} name="Content" point={scores.content} /> */}
+                    <SkillPoint icon={<FileTextIcon className="text-main" />} name="Content" point={scores.content} />
                   </>
                 </div>
               </div>
