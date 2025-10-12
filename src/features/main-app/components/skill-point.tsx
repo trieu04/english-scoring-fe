@@ -19,7 +19,7 @@ export function SkillPoint({
     <div className="flex flex-col items-center space-y-2 w-26">
       <div className="flex items-center space-x-1">
         {icon}
-        <span className="font-bold text-lg">{name}</span>
+        <span className="font-bold text-md">{name}</span>
       </div>
       <div className="">
         <div className="rounded-md text-center bg-second py-2 w-26">
