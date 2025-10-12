@@ -168,7 +168,7 @@ export function WritingComponent({ examId }: IComponentProps) {
                       const sv2 = item.writingResults.find(s => s.model !== "AI4LIFE");
                       if (sv2) {
                         Object.assign(otherModelsScores, sv2);
-                        otherModelsUsageInfo.processingTime = `${sv2.processingTime.toFixed(2)}s`;
+                        otherModelsUsageInfo.processingTime = `${sv2.processingTime?.toFixed(2) || "-"}s`;
                         Object.assign(otherModelsUsageInfo, sv2.usageInfo);
                       }
                     }

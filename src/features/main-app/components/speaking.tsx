@@ -170,7 +170,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
 
       Object.assign(otherModelsUsageInfo, {
         ...sv2.usageInfo,
-        processing_time: `${sv2.processingTime.toFixed(2)}s`,
+        processing_time: `${sv2.processingTime?.toFixed(2) || "-"}s`,
       });
     }
   });
