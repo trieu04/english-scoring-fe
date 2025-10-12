@@ -107,9 +107,7 @@ export function HistoryPage() {
 
   const deleteExamSession = async (examSessionId: string) => {
     try {
-      await apiService.delete(`/exam-session/delete`, {
-        params: { id: examSessionId },
-      });
+      await apiService.delete(`/exam-session/${examSessionId}`);
       notification.success({
         message: "Submission deleted successfully",
       });
