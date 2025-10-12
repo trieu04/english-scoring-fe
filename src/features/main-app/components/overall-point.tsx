@@ -11,10 +11,10 @@ export function OverallPoint({
     displayPoint = Math.round(Number(point) * 2) / 2;
   }
   return (
-    <div className="flex flex-col items-center text-center w-36">
+    <div className="flex flex-col items-center text-center w-30">
       <div className="font-bold text-lg">Overall</div>
       <div>
-        <div className="w-36">
+        <div className="w-30">
           <div className="text-[4.5rem] font-semibold leading-none text-main">{displayPoint}</div>
           <div>points</div>
         </div>

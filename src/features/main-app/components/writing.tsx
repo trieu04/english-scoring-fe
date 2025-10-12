@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { setFullHeightFromTop } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
 import { useQuery } from "@tanstack/react-query";
-import { Alert, Spin, Tabs } from "antd";
+import { Alert, Collapse, Spin, Tabs } from "antd";
 import { cx } from "class-variance-authority";
 import { BoldIcon, BookOpenIcon, LayersIcon, RotateCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import Markdown from "react-markdown";
 import { OverallPoint } from "./overall-point";
 import { SkillPoint } from "./skill-point";
 import { handleApiError } from "@/lib/error-handle";
+import { notification } from "antd";
 
 interface IComponentProps {
   examId?: string;
@@ -17,7 +18,7 @@ interface IComponentProps {
 
 export function WritingComponent({ examId }: IComponentProps) {
   const [isScoring, setIsScoring] = useState(false);
-  const [currentVersion, setCurrentVersion] = useState<number | null>(null);
+  const [isComparing, setIsComparing] = useState(false);
 
   const getWritingSubmissionQuery = useQuery({
     queryKey: ["/exam/{examId}/writing-submissions", { examId }],
@@ -31,6 +32,7 @@ export function WritingComponent({ examId }: IComponentProps) {
         answerFile: string;
         answerFileUrl: string;
         writingResults: {
+          model: string;
           version: number;
           overall: number;
           organization: number;
@@ -38,6 +40,14 @@ export function WritingComponent({ examId }: IComponentProps) {
           grammar: number;
           explanation: string;
           createdAt: string;
+          processingTime: number;
+          usageInfo: {
+            prompt_tokens: number;
+            completion_tokens: number;
+            total_tokens: number;
+            model: string;
+            cost_usd: number;
+          };
         }[];
         currentWritingResultVersion: number;
         writingResultVersionCount: number;
@@ -53,6 +63,10 @@ export function WritingComponent({ examId }: IComponentProps) {
     try {
       await apiService.post(`/exam/${examId}/score-writing`);
       await getWritingSubmissionQuery.refetch();
+      notification.success({
+        message: "Success",
+        description: "Writing scoring completed.",
+      });
     }
     catch (error) {
       handleApiError(error, {
@@ -62,9 +76,23 @@ export function WritingComponent({ examId }: IComponentProps) {
     setIsScoring(false);
   };
 
-  useEffect(() => {
-    setCurrentVersion(getWritingSubmissionQuery.data?.[0]?.currentWritingResultVersion || null);
-  }, [getWritingSubmissionQuery.data]);
+  const handleCompare = async () => {
+    setIsComparing(true);
+    try {
+      await apiService.post(`/exam/${examId}/score-writing-api`);
+      await getWritingSubmissionQuery.refetch();
+      notification.success({
+        message: "Success",
+        description: "Scoring with Gemini 2.5 Pro completed.",
+      });
+    }
+    catch (error) {
+      handleApiError(error, {
+        customMessage: "Failed to compare writing submissions",
+      });
+    }
+    setIsComparing(false);
+  };
 
   const isRescore = getWritingSubmissionQuery.data?.some(item => item.writingResults.length > 1);
 
@@ -110,23 +138,59 @@ export function WritingComponent({ examId }: IComponentProps) {
                       createdAt: "",
                     };
 
+                    const otherModelsScores = {
+                      overall: "-",
+                      organization: "-",
+                      vocabulary: "-",
+                      grammar: "-",
+                      explanation: "",
+                      createdAt: "",
+                    };
+
+                    const otherModelsUsageInfo = {
+                      processingTime: "-",
+                      prompt_tokens: "-",
+                      completion_tokens: "-",
+                      total_tokens: "-",
+                      model: "-",
+                      cost_usd: "-",
+                    };
+
                     if (Array.isArray(item.writingResults)) {
-                      let sv = item.writingResults.find(s => s.version === currentVersion);
+                      let sv = item.writingResults.find(s => s.model === "AI4LIFE");
                       if (!sv) {
                         sv = item.writingResults[0];
                       }
                       if (sv) {
                         Object.assign(scores, sv);
                       }
+
+                      const sv2 = item.writingResults.find(s => s.model !== "AI4LIFE");
+                      if (sv2) {
+                        Object.assign(otherModelsScores, sv2);
+                        otherModelsUsageInfo.processingTime = `${sv2.processingTime.toFixed(2)}s`;
+                        Object.assign(otherModelsUsageInfo, sv2.usageInfo);
+                      }
                     }
 
                     const answerText = item.answerText || "";
+                    const questionText = item.questionText || "";
 
                     return {
                       key: String(item.id),
                       label: <b>{`Task ${item.taskNumber}`}</b>,
                       children: (
                         <>
+                          {questionText && (
+                            <>
+                              <h3 className="mb-4">Task</h3>
+                              <div className="p-4 rounded-md border border-grey1 bg-line">
+                                {questionText.split("\n").map((line, index) => (
+                                  <p key={index}>{line}</p>
+                                ))}
+                              </div>
+                            </>
+                          )}
                           <h3 className="mb-4">Submission</h3>
                           <div className="h-64 overflow-y-auto bg-line p-4 rounded-md">
                             {answerText.split("\n").map((line, index) => (
@@ -162,6 +226,84 @@ export function WritingComponent({ examId }: IComponentProps) {
                               </div>
                             </div>
                           )}
+                          <div className="py-4">
+                            <Collapse
+                              defaultActiveKey={["1"]}
+                              items={[
+                                {
+                                  key: "1",
+                                  label: <h3 className="m-0">Compare with another model</h3>,
+                                  children: (
+                                    <div>
+                                      <div className="mb-4">
+                                        <Button size="sm" onClick={handleCompare} disabled={isComparing}>
+                                          <RotateCwIcon className={cx("text-white", isComparing && "animate-spin")} />
+                                          <span>Score with Gemini 2.5 Pro</span>
+                                        </Button>
+                                      </div>
+
+                                      <div className="space-y-4">
+                                        <div>
+                                          <h4 className="text-main mb-2">Scores</h4>
+                                          <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-md">
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Overall</span>
+                                              <span className="text-lg font-bold text-main">{otherModelsScores.overall}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Organization</span>
+                                              <span className="text-lg font-bold">{otherModelsScores.overall}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Vocabulary</span>
+                                              <span className="text-lg font-bold">{otherModelsScores.vocabulary}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Grammar</span>
+                                              <span className="text-lg font-bold">{otherModelsScores.grammar}</span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div>
+                                          <h4 className="text-main mb-2">Usage Information</h4>
+                                          <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-md">
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Model</span>
+                                              <span className="text-sm font-semibold">{otherModelsUsageInfo.model}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Processing Time</span>
+                                              <span className="text-sm font-semibold">{otherModelsUsageInfo.processingTime}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Prompt Tokens</span>
+                                              <span className="text-sm font-semibold">{otherModelsUsageInfo.prompt_tokens}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Completion Tokens</span>
+                                              <span className="text-sm font-semibold">{otherModelsUsageInfo.completion_tokens}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Total Tokens</span>
+                                              <span className="text-sm font-semibold">{otherModelsUsageInfo.total_tokens}</span>
+                                            </div>
+                                            <div className="flex flex-col">
+                                              <span className="text-sm text-gray-600">Cost</span>
+                                              <span className="text-sm font-semibold">
+                                                {otherModelsUsageInfo.cost_usd !== "-" && `$`}
+                                                {otherModelsUsageInfo.cost_usd}
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ),
+                                },
+                              ]}
+                            />
+                          </div>
                         </>
                       ),
                     };
@@ -169,6 +311,7 @@ export function WritingComponent({ examId }: IComponentProps) {
                 />
               )}
             </div>
+
             {(getWritingSubmissionQuery.isLoading || getWritingSubmissionQuery.isFetching) && (
               <div className="flex justify-center items-center h-20">
                 <Spin size="large" />

@@ -16,13 +16,13 @@ export function SkillPoint({
   }
 
   return (
-    <div className="flex flex-col items-center space-y-2 w-32">
+    <div className="flex flex-col items-center space-y-2 w-26">
       <div className="flex items-center space-x-1">
         {icon}
         <span className="font-bold text-lg">{name}</span>
       </div>
       <div className="">
-        <div className="rounded-md text-center bg-second py-2 w-32">
+        <div className="rounded-md text-center bg-second py-2 w-26">
           <div className="text-[3.5rem] font-semibold leading-none">{displayPoint}</div>
           <div>points</div>
         </div>

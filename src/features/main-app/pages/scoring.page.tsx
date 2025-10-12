@@ -101,10 +101,10 @@ export function ScoringPage() {
           </div>
         </div>
       </nav>
-      <section className="rounded-lg w-2/3 bg-dscl-white h-fit">
+      <section className="rounded-lg w-15/24 bg-dscl-white h-fit">
         <WritingComponent examId={examId} />
       </section>
-      <section className="rounded-lg w-1/3 bg-dscl-white h-fit">
+      <section className="rounded-lg w-9/24 bg-dscl-white h-fit">
         <SpeakingComponent examId={examId} />
       </section>
     </div>

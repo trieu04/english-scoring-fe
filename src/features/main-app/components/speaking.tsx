@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { setFullHeightFromTop } from "@/lib/utils";
 import { apiService } from "@/services/api.service";
 import { useQuery } from "@tanstack/react-query";
-import { Alert, notification, Spin, Tabs } from "antd";
+import { Alert, Collapse, notification, Spin, Tabs } from "antd";
 import { cx } from "class-variance-authority";
 import { BoldIcon, BookOpenIcon, ClockIcon, FileTextIcon, MessageCircleIcon, MicIcon, RotateCwIcon } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -18,7 +18,7 @@ interface IComponentProps {
 
 export function SpeakingComponent({ examId }: IComponentProps) {
   const [isScoring, setIsScoring] = useState(false);
-  const [currentVersion, setCurrentVersion] = useState<number | null>(null);
+  const [isComparing, setIsComparing] = useState(false);
 
   const getSpeakingSubmissionQuery = useQuery({
     queryKey: ["/exam/{examId}/speaking-submissions", { examId }],
@@ -33,6 +33,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
         answerFileUrl: string;
         speakingResults: {
           version: number;
+          model: string;
           overall: string | number;
           pronunciation: string | number;
           organization: string | number;
@@ -42,6 +43,14 @@ export function SpeakingComponent({ examId }: IComponentProps) {
           content: string | number;
           explanation?: string;
           createdAt: string;
+          processingTime: number;
+          usageInfo: {
+            prompt_tokens: number;
+            completion_tokens: number;
+            total_tokens: number;
+            model: string;
+            cost_usd: number;
+          };
         }[];
         speakingResultVersionCount: number;
         currentSpeakingResultVersion: number;
@@ -56,6 +65,10 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     try {
       await apiService.post(`/exam/${examId}/score-speaking`);
       await getSpeakingSubmissionQuery.refetch();
+      notification.success({
+        message: "Success",
+        description: "Speaking scoring completed.",
+      });
     }
     catch (error) {
       handleApiError(error);
@@ -67,9 +80,25 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     setIsScoring(false);
   };
 
-  useEffect(() => {
-    setCurrentVersion(getSpeakingSubmissionQuery.data?.[0]?.currentSpeakingResultVersion || null);
-  }, [getSpeakingSubmissionQuery.data]);
+  const handleCompare = async () => {
+    setIsComparing(true);
+    try {
+      await apiService.post(`/exam/${examId}/score-speaking-api`);
+      await getSpeakingSubmissionQuery.refetch();
+      notification.success({
+        message: "Success",
+        description: "Scoring with ChatGPT 4o audio completed.",
+      });
+    }
+    catch (error) {
+      handleApiError(error);
+      notification.error({
+        message: "Error",
+        description: "Failed to compare speaking submissions.",
+      });
+    }
+    setIsComparing(false);
+  };
 
   const isRescore = getSpeakingSubmissionQuery.data?.some(item => item.speakingResults.length > 1);
 
@@ -102,45 +131,49 @@ export function SpeakingComponent({ examId }: IComponentProps) {
   }
 
   const speakingParts = [] as { taskNumber: number; url: string }[];
-  const resultVersions = [] as { version: number; createdAt: string }[];
-  const sumResults = {
-    overall: 0,
-    pronunciation: 0,
-    fluency: 0,
-    vocabulary: 0,
-    grammar: 0,
-    content: 0,
-    count: 0,
+  const scores = {
+    overall: "-",
+    pronunciation: "-",
+    fluency: "-",
+    vocabulary: "-",
+    grammar: "-",
+    content: "-",
+  };
+  const otherModelsScores = {
+    overall: "-",
+    pronunciation: "-",
+    fluency: "-",
+    vocabulary: "-",
+    grammar: "-",
+    content: "-",
+  };
+  const otherModelsUsageInfo = {
+    model: "-",
+    processing_time: "-",
+    prompt_tokens: "-",
+    completion_tokens: "-",
+    total_tokens: "-",
+    cost_usd: "-",
   };
   getSpeakingSubmissionQuery.data?.forEach((item) => {
     speakingParts.push({
       taskNumber: item.taskNumber,
       url: item.answerFileUrl,
     });
-    item.speakingResults.forEach((result) => {
-      if (!resultVersions.some(r => r.version === result.version)) {
-        resultVersions.push({ version: result.version, createdAt: result.createdAt });
-      }
-    });
-    const sv = item.speakingResults.find(r => r.version === currentVersion);
+    const sv = item.speakingResults.find(r => r.model === "AI4LIFE");
     if (sv) {
-      sumResults.overall += Number(sv.overall) || 0;
-      sumResults.pronunciation += Number(sv.pronunciation) || 0;
-      sumResults.fluency += Number(sv.fluency) || 0;
-      sumResults.vocabulary += Number(sv.vocabulary) || 0;
-      sumResults.grammar += Number(sv.grammar) || 0;
-      sumResults.content += Number(sv.content) || 0;
-      sumResults.count += 1;
+      Object.assign(scores, sv);
+    }
+    const sv2 = item.speakingResults.find(r => r.model !== "AI4LIFE");
+    if (sv2) {
+      Object.assign(otherModelsScores, sv2);
+
+      Object.assign(otherModelsUsageInfo, {
+        ...sv2.usageInfo,
+        processing_time: `${sv2.processingTime.toFixed(2)}s`,
+      });
     }
   });
-  const scores = {
-    overall: sumResults.overall / sumResults.count || 0,
-    pronunciation: sumResults.pronunciation / sumResults.count || 0,
-    fluency: sumResults.fluency / sumResults.count || 0,
-    vocabulary: sumResults.vocabulary / sumResults.count || 0,
-    grammar: sumResults.grammar / sumResults.count || 0,
-    content: sumResults.content / sumResults.count || 0,
-  };
 
   return (
     <div className="bg-white rounded-lg">
@@ -187,7 +220,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
               <div className="py-4">
 
                 <h3>Score</h3>
-                <div className="mt-3 pt-4 pb-4 border-1 border-main rounded-md justify-items-center grid grid-cols-2 gap-0 space-y-8">
+                <div className="mt-3 px-4 py-4 border-1 border-main rounded-md justify-items-center grid grid-cols-2 gap-4 ">
                   <>
                     <OverallPoint point={scores.overall} />
                     <SkillPoint icon={<MicIcon className="text-main" />} name="Pronunciation" point={scores.pronunciation} />
@@ -198,40 +231,92 @@ export function SpeakingComponent({ examId }: IComponentProps) {
                   </>
                 </div>
               </div>
+
               <div className="py-4">
-                <div className="flex items-center">
-                  <h3 className="grow-1">Score version</h3>
-                </div>
-                <div className="mt-3">
-                  {resultVersions.map((version, idx) => (
-                    <div
-                      className={cx(
-                        "mt-2 flex space-x-2 border-1 border-gray-200 p-4 rounded-md items-center",
-                        version.version === currentVersion && "bg-second",
-                      )}
-                      key={idx}
-                    >
-                      <div
-                        className="text-main font-bold grow cursor-pointer"
-                        onClick={() => {
-                          setCurrentVersion(version.version);
-                        }}
-                      >
-                        Version
-                        &nbsp;
-                        {version.version}
-                      </div>
-                      <ClockIcon />
-                      <div className="flex items-center">
-                        <span>{new Date(version.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-                        &nbsp;
-                        <span>{new Date(version.createdAt).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div>
-                </div>
+                <Collapse
+                  defaultActiveKey={["1"]}
+                  items={[
+                    {
+                      key: "1",
+                      label: <h3 className="m-0">Compare with another model</h3>,
+                      children: (
+                        <div>
+                          <div className="mb-4">
+                            <Button size="sm" onClick={handleCompare} disabled={isComparing}>
+                              <RotateCwIcon className={cx("text-white", isComparing && "animate-spin")} />
+                              <span>Score with GPT-4o Audio</span>
+                            </Button>
+                          </div>
+
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="text-main mb-2">Scores</h4>
+                              <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-md">
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Overall</span>
+                                  <span className="text-lg font-bold text-main">{otherModelsScores.overall}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Pronunciation</span>
+                                  <span className="text-lg font-bold">{otherModelsScores.pronunciation}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Fluency</span>
+                                  <span className="text-lg font-bold">{otherModelsScores.fluency}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Vocabulary</span>
+                                  <span className="text-lg font-bold">{otherModelsScores.vocabulary}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Grammar</span>
+                                  <span className="text-lg font-bold">{otherModelsScores.grammar}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Content</span>
+                                  <span className="text-lg font-bold">{otherModelsScores.content}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div>
+                              <h4 className="text-main mb-2">Usage Information</h4>
+                              <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-md">
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Model</span>
+                                  <span className="text-sm font-semibold">{otherModelsUsageInfo.model}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Processing Time</span>
+                                  <span className="text-sm font-semibold">{otherModelsUsageInfo.processing_time}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Prompt Tokens</span>
+                                  <span className="text-sm font-semibold">{otherModelsUsageInfo.prompt_tokens}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Completion Tokens</span>
+                                  <span className="text-sm font-semibold">{otherModelsUsageInfo.completion_tokens}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Total Tokens</span>
+                                  <span className="text-sm font-semibold">{otherModelsUsageInfo.total_tokens}</span>
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-sm text-gray-600">Cost</span>
+                                  <span className="text-sm font-semibold">
+                                    {otherModelsUsageInfo.cost_usd !== "-" && `$`}
+                                    {otherModelsUsageInfo.cost_usd}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ),
+                    },
+                  ]}
+                />
               </div>
             </>
           </>
