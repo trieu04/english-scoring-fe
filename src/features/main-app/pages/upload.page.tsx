@@ -203,7 +203,7 @@ function FileScoring() {
                   <textarea
                     className="w-full p-2 border rounded border-gray-300"
                     rows={2}
-                    placeholder="Type your answer..."
+                    placeholder="Question text (optional)"
                     value={task.questionText}
                     onChange={(e) => {
                       task.questionText = e.target.value;
@@ -412,7 +412,10 @@ function BatchScoring() {
   });
 
   return (
-    <div className="mt-8">
+    <div
+      className="overflow-auto pb-16"
+      ref={setFullHeightFromTop}
+    >
 
       <div
         {...getRootProps()}
