@@ -157,10 +157,7 @@ export function WritingComponent({ examId }: IComponentProps) {
                     };
 
                     if (Array.isArray(item.writingResults)) {
-                      let sv = item.writingResults.find(s => s.model === "AI4LIFE");
-                      if (!sv) {
-                        sv = item.writingResults[0];
-                      }
+                      const sv = item.writingResults.find(s => s.model === "AI4LIFE");
                       if (sv) {
                         Object.assign(scores, sv);
                       }
