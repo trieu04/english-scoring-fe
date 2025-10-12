@@ -184,7 +184,7 @@ export function WritingComponent({ examId }: IComponentProps) {
                           {questionText && (
                             <>
                               <h3 className="mb-4">Task</h3>
-                              <div className="p-4 rounded-md border border-grey1 bg-line">
+                              <div className="p-4 rounded-md border border-grey1 bg-line mb-4">
                                 {questionText.split("\n").map((line, index) => (
                                   <p key={index}>{line}</p>
                                 ))}
