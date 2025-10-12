@@ -11,6 +11,7 @@ import { Checkbox, notification, Popover } from "antd";
 import { clsx } from "clsx";
 import { DownloadIcon, ExternalLink, Trash2Icon, UploadIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import dayjs from "dayjs";
 
 interface ScoringSystem {
   id: string;
@@ -198,9 +199,16 @@ export function HistoryPage() {
             {tableData?.rows.map((row, idx) => (
               <TableRow key={row.id} className={idx % 2 === 1 ? "bg-[#eaf6fb]" : "bg-white"}>
                 <TableCell className="text-center">{row.no}</TableCell>
-                <TableCell>{row.name}</TableCell>
+                <TableCell
+                  className="cursor-pointer hover:underline"
+                  onClick={() => {
+                    navigate({ to: `/scoring`, search: { examSessionId: row.id, examId: undefined } });
+                  }}
+                >
+                  {row.name}
+                </TableCell>
                 <TableCell>{row.scoringSystemName}</TableCell>
-                <TableCell>{row.createdAt}</TableCell>
+                <TableCell>{dayjs(row.createdAt).format("DD/MM/YYYY HH:mm")}</TableCell>
                 <TableCell className="flex justify-center items-center">
                   <Button size="icon" variant="ghost" title="Download"><DownloadIcon className="w-5 h-5" /></Button>
                   <Button size="icon" variant="ghost" title="Upload"><UploadIcon className="w-5 h-5 " /></Button>

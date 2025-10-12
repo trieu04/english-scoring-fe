@@ -253,7 +253,12 @@ export function DashboardPage() {
           {listExamSessionQuery.isLoading && <Spin />}
           {listExamSessionQuery.data && listExamSessionQuery.data.data.map((item, idx) => (
             <div key={`${item.id}-${idx}`} className="flex items-center justify-between py-2">
-              <div className="flex items-center gap-2">
+              <div
+                className="flex items-center gap-2 cursor-pointer hover:underline"
+                onClick={() => {
+                  navigate({ to: `/scoring`, search: { examSessionId: item.id, examId: undefined } });
+                }}
+              >
                 <Icons.ExamMultipleChoiceIcon className="w-5 h-5 text-[#3881A2]" />
                 <span className="font-medium text-sm">{item.name || `Test ${idx + 1}`}</span>
               </div>
