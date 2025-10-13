@@ -181,63 +181,76 @@ export function BatchUpload() {
                 {`file-name.zip
 ├── student-name-1/
 │   ├── speaking/
-│   │   ├── part 1.mp3
-│   │   ├── part 2.mp3
-│   │   └── part 3.mp3
-│   └── writing/
-│       ├── task 1.docx
-│       ├── task 2.docx
-│       └── task 3.docx
+│   │   ├── audio1.mp3
+│   │   ├── audio2.mp3
+│   │   └── audio3.mp3
+│   ├── speaking_topic/
+│   │   ├── topic1.docx
+│   │   ├── topic2.docx
+│   │   └── topic3.docx
+│   ├── writing/
+│   │   ├── writing1.docx
+│   │   ├── writing2.docx
+│   │   └── writing3.docx
+│   └── writing_topic/
+│       ├── topic1.pdf
+│       ├── topic2.pdf
+│       └── topic3.pdf
 ├── student-name-2/
 │   ├── speaking/
-│   │   ├── part 1.mp3
-│   │   ├── part 2.mp3
-│   │   └── part 3.mp3
+│   │   ├── part1.mp3
+│   │   └── part2.mp3
 │   └── writing/
-│       ├── task 1.docx
-│       ├── task 2.docx
-│       └── task 3.docx
-└── student-name-3/
-    ├── speaking/
-    │   ├── part 1.mp3
-    │   ├── part 2.mp3
-    │   └── part 3.mp3
-    └── writing/
-        ├── task 1.docx
-        ├── task 2.docx
-        └── task 3.docx`}
+│       └── essay1.docx
+└── ABCXYZ/
+    ├── writing/
+    │   ├── task1.docx
+    │   └── task2.docx
+    └── writing_topic/
+        ├── task1.pdf
+        └── task2.pdf
+`}
               </div>
             </div>
             <div className="space-y-2">
               <h4 className="font-medium ">Important Notes:</h4>
               <ul className="list-disc list-inside space-y-1 ">
-                <li>Each student should have their own folder named with their full name</li>
+                <li>Each student is a folder (any name)</li>
                 <li>
-                  Each student folder must contain exactly two subfolders:
+                  Each student folder can contain
+                  {" "}
                   <code className="bg-blue-100 px-1 rounded">speaking</code>
                   {" "}
-                  and
+                  and/or
+                  {" "}
                   <code className="bg-blue-100 px-1 rounded">writing</code>
+                  {" "}
+                  subfolders (at least one is required)
                 </li>
                 <li>
-                  Speaking files should be named as:
-                  <code className="bg-blue-100 px-1 rounded">part 1.mp3</code>
-                  ,
-                  <code className="bg-blue-100 px-1 rounded">part 2.mp3</code>
-                  ,
-                  <code className="bg-blue-100 px-1 rounded">part 3.mp3</code>
+                  Optional topic folders:
+                  {" "}
+                  <code className="bg-blue-100 px-1 rounded">speaking_topic</code>
+                  {" "}
+                  and
+                  {" "}
+                  <code className="bg-blue-100 px-1 rounded">writing_topic</code>
+                  {" "}
+                  can be included to store exam topics/instructions
                 </li>
                 <li>
-                  Writing files should be named as:
-                  <code className="bg-blue-100 px-1 rounded">task 1.docx</code>
+                  Files should contain numbers (1, 2, 3, etc.) in their names to indicate order.
+                  Example:
+                  {" "}
+                  <code className="bg-blue-100 px-1 rounded">part1.mp3</code>
                   ,
-                  <code className="bg-blue-100 px-1 rounded">task 2.docx</code>
+                  {" "}
+                  <code className="bg-blue-100 px-1 rounded">audio 2.mp3</code>
                   ,
-                  <code className="bg-blue-100 px-1 rounded">task 3.docx</code>
+                  {" "}
+                  <code className="bg-blue-100 px-1 rounded">task3.docx</code>
                 </li>
-                <li>File names are case-sensitive and must match exactly as shown</li>
-                <li>Supported audio formats: .mp3, .wav, .m4a</li>
-                <li>Supported document formats: .docx, .doc, .pdf, .txt</li>
+                <li>File names are not case-sensitive</li>
               </ul>
             </div>
           </div>
