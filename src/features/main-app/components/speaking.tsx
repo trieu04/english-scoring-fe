@@ -204,6 +204,14 @@ export function SpeakingComponent({ examId }: IComponentProps) {
                 />
               </div>
             )}
+            {getSpeakingSubmissionQuery.isSuccess && getSpeakingSubmissionQuery.data?.length === 0 && (
+              <div className="flex justify-center items-center h-full">
+                <Alert
+                  message="No speaking tasks"
+                  type="info"
+                />
+              </div>
+            )}
 
             <>
               <h3>Submission</h3>

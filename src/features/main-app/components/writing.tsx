@@ -307,6 +307,12 @@ export function WritingComponent({ examId }: IComponentProps) {
                   })}
                 />
               )}
+              {getWritingSubmissionQuery.isSuccess && getWritingSubmissionQuery.data?.length === 0 && (
+                <Alert
+                  message="No writing tasks"
+                  type="info"
+                />
+              )}
             </div>
 
             {(getWritingSubmissionQuery.isLoading || getWritingSubmissionQuery.isFetching) && (
