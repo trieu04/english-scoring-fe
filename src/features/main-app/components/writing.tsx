@@ -133,7 +133,7 @@ export function WritingComponent({ examId }: IComponentProps) {
                     grammar: "-",
                     fluency: "-",
                     content: "-",
-                    explanation: "",
+                    explanation: "-",
                     createdAt: "",
                   };
 
@@ -142,7 +142,7 @@ export function WritingComponent({ examId }: IComponentProps) {
                     organization: "-",
                     vocabulary: "-",
                     grammar: "-",
-                    explanation: "",
+                    explanation: "-",
                     createdAt: "",
                   };
 
@@ -180,7 +180,7 @@ export function WritingComponent({ examId }: IComponentProps) {
                         {questionText && (
                           <>
                             <h3 className="mb-4">Task</h3>
-                            <div className="p-4 rounded-md border border-grey1 bg-line mb-4">
+                            <div className="max-h-64 overflow-y-auto p-4 rounded-md border border-grey1 bg-line mb-4">
                               {questionText.split("\n").map((line, index) => (
                                 <p key={index}>{line}</p>
                               ))}
@@ -260,7 +260,25 @@ export function WritingComponent({ examId }: IComponentProps) {
                                           </div>
                                         </div>
                                       </div>
-
+                                      <div>
+                                        <div className="py-4">
+                                          <h4 className="text-main mb-2">Explanation</h4>
+                                          <div className="mt-3 p-2 rounded-md border border-grey1 bg-gray-50">
+                                            <div className="overflow-y-auto max-h-42 pr-2 prose max-w-full text-md">
+                                              <Markdown components={{
+                                                p: ({ node, ...props }) => <p className="" {...props} />,
+                                                h2: ({ node, ...props }) => <h2 className="text-main" {...props} />,
+                                                h3: ({ node, ...props }) => <h3 className="text-main" {...props} />,
+                                                h4: ({ node, ...props }) => <h4 className="text-main" {...props} />,
+                                                li: ({ node, ...props }) => <li className="" {...props} />,
+                                              }}
+                                              >
+                                                {otherModelsScores.explanation}
+                                              </Markdown>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
                                       <div>
                                         <h4 className="text-main mb-2">Usage Information</h4>
                                         <div className="grid grid-cols-2 gap-3 p-4 bg-gray-50 rounded-md">

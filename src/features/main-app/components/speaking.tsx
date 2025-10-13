@@ -10,6 +10,7 @@ import { AudioPlayer } from "./audio-player";
 import { OverallPoint } from "./overall-point";
 import { SkillPoint } from "./skill-point";
 import { handleApiError } from "@/lib/error-handle";
+import Markdown from "react-markdown";
 
 interface IComponentProps {
   examId?: string;
@@ -91,10 +92,6 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     }
     catch (error) {
       handleApiError(error);
-      notification.error({
-        message: "Error",
-        description: "Failed to compare speaking submissions.",
-      });
     }
     setIsComparing(false);
   };
@@ -129,7 +126,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     );
   }
 
-  const speakingParts = [] as { taskNumber: number; url: string }[];
+  const speakingParts = [] as { taskNumber: number; url: string; questionText: string }[];
   const scores = {
     overall: "-",
     pronunciation: "-",
@@ -137,6 +134,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     vocabulary: "-",
     grammar: "-",
     content: "-",
+    explanation: "-",
   };
   const otherModelsScores = {
     overall: "-",
@@ -145,6 +143,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     vocabulary: "-",
     grammar: "-",
     content: "-",
+    explanation: "-",
   };
   const otherModelsUsageInfo = {
     model: "-",
@@ -158,6 +157,7 @@ export function SpeakingComponent({ examId }: IComponentProps) {
     speakingParts.push({
       taskNumber: item.taskNumber,
       url: item.answerFileUrl,
+      questionText: item.questionText,
     });
     const sv = item.speakingResults.find(r => r.model === "AI4LIFE");
     if (sv) {
@@ -212,8 +212,18 @@ export function SpeakingComponent({ examId }: IComponentProps) {
               </div>
             )}
             {getSpeakingSubmissionQuery.isSuccess && getSpeakingSubmissionQuery.data?.length > 0 && (
-
               <>
+                <>
+                  <h3 className="mb-4">Task</h3>
+                  <div className="max-h-64 overflow-y-auto p-4 rounded-md border border-grey1 bg-line mb-4">
+                    {speakingParts.map(part => (
+                      <p key={part.taskNumber}>
+                        <span className="font-bold">{`Part ${part.taskNumber}: `}</span>
+                        {part.questionText}
+                      </p>
+                    ))}
+                  </div>
+                </>
                 <h3>Submission</h3>
                 {
                   speakingParts.map(part => (
@@ -283,6 +293,25 @@ export function SpeakingComponent({ examId }: IComponentProps) {
                                   <div className="flex flex-col">
                                     <span className="text-sm text-gray-600">Content</span>
                                     <span className="text-lg font-bold">{otherModelsScores.content}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <div className="py-4">
+                                  <h4 className="text-main mb-2">Explanation</h4>
+                                  <div className="mt-3 p-2 rounded-md border border-grey1 bg-gray-50">
+                                    <div className="overflow-y-auto max-h-42 pr-2 prose max-w-full text-md">
+                                      <Markdown components={{
+                                        p: ({ node, ...props }) => <p className="" {...props} />,
+                                        h2: ({ node, ...props }) => <h2 className="text-main" {...props} />,
+                                        h3: ({ node, ...props }) => <h3 className="text-main" {...props} />,
+                                        h4: ({ node, ...props }) => <h4 className="text-main" {...props} />,
+                                        li: ({ node, ...props }) => <li className="" {...props} />,
+                                      }}
+                                      >
+                                        {otherModelsScores.explanation}
+                                      </Markdown>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
