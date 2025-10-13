@@ -19,7 +19,7 @@ interface ScoringSystem {
   description: string;
 }
 
-interface ExamSession {
+export interface ExamSession {
   id: string;
   no: number;
   createdAt: string;
