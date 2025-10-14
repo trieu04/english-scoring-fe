@@ -213,17 +213,24 @@ export function SpeakingComponent({ examId }: IComponentProps) {
             )}
             {getSpeakingSubmissionQuery.isSuccess && getSpeakingSubmissionQuery.data?.length > 0 && (
               <>
-                <>
-                  <h3 className="mb-4">Task</h3>
-                  <div className="max-h-64 overflow-y-auto p-4 rounded-md border border-grey1 bg-line mb-4">
-                    {speakingParts.map(part => (
-                      <p key={part.taskNumber}>
-                        <span className="font-bold">{`Part ${part.taskNumber}: `}</span>
-                        {part.questionText}
-                      </p>
-                    ))}
-                  </div>
-                </>
+                {speakingParts.some(part => part.questionText) && (
+                  <>
+                    <h3 className="mb-4">Task</h3>
+                    <div className="max-h-64 overflow-y-auto p-4 rounded-md border border-grey1 bg-line mb-4">
+                      {speakingParts.map((part) => {
+                        if (part.questionText) {
+                          return (
+                            <p key={part.taskNumber}>
+                              <span className="font-bold">{`Part ${part.taskNumber}: `}</span>
+                              {part.questionText}
+                            </p>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  </>
+                )}
                 <h3>Submission</h3>
                 {
                   speakingParts.map(part => (
