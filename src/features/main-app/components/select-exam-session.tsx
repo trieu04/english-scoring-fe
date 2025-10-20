@@ -1,10 +1,11 @@
 import { Input } from "@/components/ui/input";
 import { apiService } from "@/services/api.service";
-import { PaginatedResult } from "@/types/interfaces/pagination";
+import { PaginatedResponse } from "@/types/pagination";
 import { useQuery } from "@tanstack/react-query";
 import { ConfigProvider, Select } from "antd";
+import { PlusCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ExamSession } from "../pages/history.page";
+import { ExamSessionInterface } from "../types/scoring";
 
 export function SelectExamSession({
   onNewExamSessionNameChange,
@@ -24,10 +25,7 @@ export function SelectExamSession({
 
   const examSessionsQuery = useQuery({
     queryKey: ["/exam-session"],
-    queryFn: async () => {
-      const response = apiService.get<PaginatedResult<ExamSession>>("/exam-session");
-      return response;
-    },
+    queryFn: () => apiService.get<PaginatedResponse<ExamSessionInterface>>("/exam-session"),
   });
 
   return (
@@ -48,10 +46,15 @@ export function SelectExamSession({
           loading={examSessionsQuery.isLoading}
           options={[
             {
-              label: "➕ Create New",
+              label: (
+                <span className="flex items-center">
+                  <PlusCircleIcon className="w-4 h-4 mr-2" />
+                  Create New
+                </span>
+              ),
               value: "new",
             },
-            ...(examSessionsQuery.data?.data.map(session => ({
+            ...(examSessionsQuery.data?.items.map(session => ({
               label: session.name,
               value: session.id,
             })) ?? []),
