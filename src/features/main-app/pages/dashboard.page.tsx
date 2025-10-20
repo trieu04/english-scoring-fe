@@ -1,3 +1,10 @@
+import { BarChart, BarSeries } from "@mui/x-charts/BarChart";
+import { useQuery } from "@tanstack/react-query";
+import { useNavigate, useSearch } from "@tanstack/react-router";
+import { Spin } from "antd";
+import { HistoryIcon } from "lucide-react";
+import { useEffect, useMemo } from "react";
+
 import Icons from "@/components/icons";
 import Illustrations from "@/components/illustrations";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,13 +12,8 @@ import { Link } from "@/components/ui/link";
 import { Pane } from "@/components/ui/pane";
 import { Pane2 } from "@/components/ui/pane2";
 import { apiService } from "@/services/api.service";
-import { PaginatedResult } from "@/types/interfaces/pagination";
-import { BarChart, BarSeries } from "@mui/x-charts/BarChart";
-import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useSearch } from "@tanstack/react-router";
-import { Spin } from "antd";
-import { HistoryIcon } from "lucide-react";
-import { useEffect, useMemo } from "react";
+import { PaginatedResponse } from "@/types/pagination";
+import { ExamSessionInterface } from "../types/scoring";
 
 export function DashboardPage() {
   // const [scoringSystem, setScoringSystem] = useState();
@@ -20,16 +22,11 @@ export function DashboardPage() {
   const listExamSessionQuery = useQuery({
     queryKey: ["/exam-session"],
     queryFn: () => {
-      return apiService.get<PaginatedResult<{
-        id: string;
-        no: number;
-        createdAt: string;
-        updatedAt: string;
-        userId: string | null;
-        name: string;
-        description: string;
-        scoringSystemName: string;
-      }>>(`/exam-session`, {
+      return apiService.get<PaginatedResponse<
+        ExamSessionInterface & {
+          scoringSystemName: string;
+        }
+      >>(`/exam-session`, {
         params: {
           limit: 10,
           page: 1,
@@ -251,7 +248,7 @@ export function DashboardPage() {
       >
         <div className="flex flex-col">
           {listExamSessionQuery.isLoading && <Spin />}
-          {listExamSessionQuery.data && listExamSessionQuery.data.data.map((item, idx) => (
+          {listExamSessionQuery.data && listExamSessionQuery.data.items.map((item, idx) => (
             <div key={`${item.id}-${idx}`} className="flex items-center justify-between py-2">
               <div
                 className="flex items-center gap-2 cursor-pointer hover:underline"

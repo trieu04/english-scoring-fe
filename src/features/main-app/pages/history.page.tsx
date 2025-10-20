@@ -4,7 +4,6 @@ import { Pane } from "@/components/ui/pane";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { handleApiError } from "@/lib/error-handle";
 import { apiService } from "@/services/api.service";
-import { PaginatedResult } from "@/types/interfaces/pagination";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { Checkbox, notification, Popover } from "antd";
@@ -12,28 +11,13 @@ import { clsx } from "clsx";
 import { DownloadIcon, ExternalLink, Trash2Icon, UploadIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
-
-interface ScoringSystem {
-  id: string;
-  name: string;
-  description: string;
-}
-
-export interface ExamSession {
-  id: string;
-  no: number;
-  createdAt: string;
-  updatedAt: string;
-  userId: string | null;
-  name: string;
-  description: string;
-  scoringSystemName: string;
-}
+import { PaginatedResponse } from "@/types/pagination";
+import { ExamSessionInterface, ScoringSystemInterface } from "../types/scoring";
 
 export function HistoryPage() {
   const navigate = useNavigate();
   const [tableState, setTableState] = useState({
-    itemsPerPage: 10,
+    limit: 10,
     page: 1,
     search: "",
     scoringSystemFilter: [] as string[],
@@ -47,13 +31,10 @@ export function HistoryPage() {
   const listExamSessionQuery = useQuery({
     queryKey: ["/exam-session", tableState],
     queryFn: () => {
-      return apiService.get<PaginatedResult<ExamSession>>(`/exam-session`, {
-        params: {
-          limit: tableState.itemsPerPage,
-          page: tableState.page,
-          search: tableState.search,
-          scoringSystemFilter: tableState.scoringSystemFilter,
-        },
+      return apiService.get<PaginatedResponse<
+        ExamSessionInterface & { scoringSystemName: string }
+      >>(`/exam-session`, {
+        params: tableState,
       });
     },
   });
@@ -61,27 +42,27 @@ export function HistoryPage() {
   const listScoringSystemQuery = useQuery({
     queryKey: ["/scoring-system"],
     queryFn: () => {
-      return apiService.get<ScoringSystem[]>("/scoring-system");
+      return apiService.get<ScoringSystemInterface[]>("/scoring-system");
     },
   });
 
   const tableData = useMemo(() => {
     const blankTableData = {
       rows: [],
-      currentPage: 1,
+      page: 1,
       totalItems: 0,
       totalPages: 1,
     };
     if (listExamSessionQuery.isSuccess) {
-      const { data: rows, meta: { currentPage, totalItems, totalPages } } = listExamSessionQuery.data;
-      return { rows, currentPage, totalItems, totalPages };
+      const { items: rows, pagination: { page, totalItems, totalPages } } = listExamSessionQuery.data;
+      return { rows, page, totalItems, totalPages };
     }
 
     return blankTableData;
   }, [listExamSessionQuery.isSuccess, listExamSessionQuery.data]);
 
   const listScoringSystemData = useMemo(() => {
-    const blankData = [] as ScoringSystem[];
+    const blankData = [] as ScoringSystemInterface[];
 
     if (listScoringSystemQuery.isSuccess) {
       return listScoringSystemQuery.data;
@@ -196,7 +177,7 @@ export function HistoryPage() {
           <TableBody>
             {tableData?.rows.map((row, idx) => (
               <TableRow key={row.id} className={idx % 2 === 1 ? "bg-[#eaf6fb]" : "bg-white"}>
-                <TableCell className="text-center">{row.no}</TableCell>
+                <TableCell className="text-center">{idx + 1}</TableCell>
                 <TableCell
                   className="cursor-pointer hover:underline"
                   onClick={() => {
