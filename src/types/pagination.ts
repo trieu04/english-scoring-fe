@@ -7,14 +7,16 @@ export interface PaginationWithSearchQueryDto extends PaginationQueryDto {
   search: string;
 }
 
-export interface PaginatedMeta {
-  currentPage: number;
+export interface PaginationMeta {
+  page: number;
   pageSize: number;
   totalItems: number;
   totalPages: number;
+  hasNextPage?: boolean;
+  hasPreviousPage?: boolean;
 }
 
-export interface PaginatedResult<T> {
-  data: T[];
-  meta: PaginatedMeta;
+export interface PaginatedResponse<T> {
+  items: T[];
+  pagination: PaginationMeta;
 }
