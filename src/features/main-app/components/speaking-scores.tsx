@@ -6,7 +6,7 @@ import { apiService } from "@/services/api.service";
 import { useQuery } from "@tanstack/react-query";
 import { notification } from "antd";
 import { cx } from "class-variance-authority";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ScoringJobInterface, ScoringJobStatus, ScoringModel, ScoringQueueName, ScoringResultInterface, SubmissionType } from "../types/scoring";
 import { OverallPoint } from "./overall-point";
 import { SkillPoint } from "./skill-point";
@@ -50,6 +50,35 @@ export function SpeakingScoresComponent({
       return false;
     },
   });
+
+  // Get current job status
+  const currentJob = useMemo(() => {
+    const jobs = getScoringJobsQuery.data || [];
+    return jobs.find(j => j.submissionType === SubmissionType.SPEAKING && j.queueName?.includes("ai4life")) || null;
+  }, [getScoringJobsQuery.data]);
+
+  const [previousStatus, setPreviousStatus] = useState<ScoringJobStatus | null>(null);
+
+  useEffect(() => {
+    if (currentJob) {
+      if (previousStatus === ScoringJobStatus.PROCESSING) {
+        if (currentJob.status === ScoringJobStatus.DONE) {
+          getSpeakingScoringResultQuery.refetch();
+          notification.success({
+            message: "Success",
+            description: "Scoring completed successfully.",
+          });
+        }
+        else if (currentJob.status === ScoringJobStatus.ERROR) {
+          notification.error({
+            message: "Error",
+            description: "Scoring failed. Please try again.",
+          });
+        }
+      }
+      setPreviousStatus(currentJob.status);
+    }
+  }, [currentJob, previousStatus, getSpeakingScoringResultQuery]);
 
   const handleReScore = async () => {
     if (!examId)
@@ -95,12 +124,6 @@ export function SpeakingScoresComponent({
 
     return defaultData;
   }, [getSpeakingScoringResultQuery.data]);
-
-  // Get current job status
-  const currentJob = useMemo(() => {
-    const jobs = getScoringJobsQuery.data || [];
-    return jobs.find(j => j.submissionType === SubmissionType.SPEAKING && j.queueName?.includes("ai4life")) || null;
-  }, [getScoringJobsQuery.data]);
 
   // Determine button state and text
   const buttonState = useMemo(() => {

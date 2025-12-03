@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { notification } from "antd";
 import { cx } from "class-variance-authority";
 import { BoldIcon, BookOpenIcon, ClockIcon, LayersIcon, RotateCwIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Markdown from "react-markdown";
 import { ScoringJobInterface, ScoringJobStatus, ScoringModel, ScoringQueueName, ScoringResultInterface, SubmissionType } from "../types/scoring";
 import { OverallPoint } from "./overall-point";
@@ -54,6 +54,35 @@ export function WritingScoresComponent({
     },
   });
 
+  // Get current job status
+  const currentJob = useMemo(() => {
+    const jobs = getScoringJobsQuery.data || [];
+    return jobs.length > 0 ? jobs[0] : null;
+  }, [getScoringJobsQuery.data]);
+
+  const [previousStatus, setPreviousStatus] = useState<ScoringJobStatus | null>(null);
+
+  useEffect(() => {
+    if (currentJob) {
+      if (previousStatus === ScoringJobStatus.PROCESSING) {
+        if (currentJob.status === ScoringJobStatus.DONE) {
+          getWritingScoringResultQuery.refetch();
+          notification.success({
+            message: "Success",
+            description: "Scoring completed successfully.",
+          });
+        }
+        else if (currentJob.status === ScoringJobStatus.ERROR) {
+          notification.error({
+            message: "Error",
+            description: "Scoring failed. Please try again.",
+          });
+        }
+      }
+      setPreviousStatus(currentJob.status);
+    }
+  }, [currentJob, previousStatus, getWritingScoringResultQuery]);
+
   const handleReScore = async () => {
     if (!examId || !submissionId)
       return;
@@ -97,12 +126,6 @@ export function WritingScoresComponent({
 
     return defaultData;
   }, [getWritingScoringResultQuery.data]);
-
-  // Get current job status
-  const currentJob = useMemo(() => {
-    const jobs = getScoringJobsQuery.data || [];
-    return jobs.length > 0 ? jobs[0] : null;
-  }, [getScoringJobsQuery.data]);
 
   // Determine button state and text
   const buttonState = useMemo(() => {

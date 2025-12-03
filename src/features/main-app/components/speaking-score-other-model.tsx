@@ -1,6 +1,6 @@
 import { cx } from "class-variance-authority";
 import { ClockIcon, RotateCwIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Markdown from "react-markdown";
 
 import { Button } from "@/components/ui/button";
@@ -100,6 +100,29 @@ export function SpeakingScoresOtherModelComponent({
     const jobs = getScoringJobsQuery.data || [];
     return jobs.find(j => j.submissionType === SubmissionType.SPEAKING && j.queueName?.includes("chatgpt")) || null;
   }, [getScoringJobsQuery.data]);
+
+  const [previousStatus, setPreviousStatus] = useState<ScoringJobStatus | null>(null);
+
+  useEffect(() => {
+    if (currentJob) {
+      if (previousStatus === ScoringJobStatus.PROCESSING) {
+        if (currentJob.status === ScoringJobStatus.DONE) {
+          getSpeakingScoringResultQuery.refetch();
+          notification.success({
+            message: "Success",
+            description: "ChatGPT 4o Audio scoring completed successfully.",
+          });
+        }
+        else if (currentJob.status === ScoringJobStatus.ERROR) {
+          notification.error({
+            message: "Error",
+            description: "ChatGPT 4o Audio scoring failed. Please try again.",
+          });
+        }
+      }
+      setPreviousStatus(currentJob.status);
+    }
+  }, [currentJob, previousStatus, getSpeakingScoringResultQuery]);
 
   // Determine button state and text
   const buttonState = useMemo(() => {
