@@ -6,6 +6,7 @@ import { ConfigProvider, Select } from "antd";
 import { PlusCircleIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { ExamSessionInterface } from "../types/scoring";
+import { useSearch } from "@tanstack/react-router";
 
 export function SelectExamSession({
   onNewExamSessionNameChange,
@@ -14,6 +15,7 @@ export function SelectExamSession({
   onNewExamSessionNameChange: (value: string) => void;
   onSelectExamSessionChange: (value: string) => void;
 }) {
+  const { examSessionId } = useSearch({ from: "/main-app/upload" });
   const [selectedExamSession, setSelectedExamSession] = useState<string>("new");
   const [newExamSessionName, setNewExamSessionName] = useState("");
   useEffect(() => {
@@ -23,6 +25,11 @@ export function SelectExamSession({
     onNewExamSessionNameChange(newExamSessionName);
   }, [newExamSessionName, onNewExamSessionNameChange]);
 
+  useEffect(() => {
+    if (examSessionId) {
+      setSelectedExamSession(examSessionId);
+    }
+  }, [examSessionId]);
   const examSessionsQuery = useQuery({
     queryKey: ["/exam-session"],
     queryFn: () => apiService.get<PaginatedResponse<ExamSessionInterface>>("/exam-session"),

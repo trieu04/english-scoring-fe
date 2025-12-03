@@ -189,8 +189,58 @@ export function HistoryPage() {
                 <TableCell>{row.scoringSystemName}</TableCell>
                 <TableCell>{dayjs(row.createdAt).format("DD/MM/YYYY HH:mm")}</TableCell>
                 <TableCell className="flex justify-center items-center">
-                  <Button size="icon" variant="ghost" title="Download"><DownloadIcon className="w-5 h-5" /></Button>
-                  <Button size="icon" variant="ghost" title="Upload"><UploadIcon className="w-5 h-5 " /></Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    title="Download"
+                    onClick={async () => {
+                      try {
+                        // 1. Make the request with responseType: 'blob'
+                        const data = await apiService.get(
+                          `/exam-session/${row.id}/download`,
+                          { responseType: "blob" }, // Crucial for file downloads
+                        );
+
+                        // 2. Create a URL for the blob
+                        // If your apiService returns the full Axios response, use response.data
+                        // If it returns the body directly, just use 'response'
+                        const url = window.URL.createObjectURL(new Blob([data as string]));
+
+                        // 3. Create a temporary anchor tag to trigger the download
+                        const link = document.createElement("a");
+                        link.href = url;
+
+                        // Optional: Set the filename.
+                        // Ideally, extract this from the 'content-disposition' header if available.
+                        link.setAttribute("download", `exam-session_${row.name}_${row.id}.csv`);
+
+                        // 4. Append to body, click, and clean up
+                        document.body.appendChild(link);
+                        link.click();
+
+                        // Cleanup
+                        link.parentNode?.removeChild(link);
+                        window.URL.revokeObjectURL(url);
+                      }
+                      catch (error) {
+                        console.error("Download failed", error);
+                        // Optional: Add toast notification here
+                      }
+                    }}
+                  >
+                    <DownloadIcon className="w-5 h-5" />
+
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    title="Upload"
+                    onClick={() => {
+                      navigate({ to: "/upload", search: { scoringSystem: row.scoringSystemId ?? undefined, examSessionId: row.id } });
+                    }}
+                  >
+                    <UploadIcon className="w-5 h-5 " />
+                  </Button>
                   <Button
                     size="icon"
                     variant="ghost"

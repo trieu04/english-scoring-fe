@@ -86,7 +86,8 @@ const uploadRoute = createRoute({
   component: UploadPage,
   validateSearch: (search) => {
     return {
-      scoringSystem: search.scoringSystem ?? undefined,
+      scoringSystem: z.string().optional().parse(search.scoringSystem),
+      examSessionId: z.string().optional().parse(search.examSessionId),
     };
   },
 });
