@@ -3,6 +3,9 @@ FROM node:20-alpine AS build-stage
 
 WORKDIR /app
 
+ARG VITE_APP_API_URL
+ENV VITE_APP_API_URL=$VITE_APP_API_URL
+
 COPY package.json /app
 COPY yarn.lock /app
 RUN yarn install --frozen-lockfile
